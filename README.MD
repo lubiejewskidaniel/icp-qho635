@@ -26,13 +26,23 @@ The system will follow an MVP-first approach and will be developed incrementally
 
 ## 👥 Project Team
 
-This project is developed by a team of 5 members:
+This project is developed collaboratively by a team of 5 members:
 
 - Daniel Lubiejewski
 - Maria Vladimirova
 - Giordano Zanolla
 - Elena Michaela Vintilla
 - Kacper Zaleski
+
+The project is carried out as a fully remote collaboration.  
+Team members work asynchronously and coordinate tasks using:
+
+- Git & GitHub for version control
+- Jira Software for task management
+- WhatsApp for daily communication and updates
+- Online meetings (e.g., Webex) for sprint alignment and reviews
+
+The team follows a structured workflow with clearly defined feature ownership to ensure accountability, transparency and efficient delivery.
 
 ---
 
