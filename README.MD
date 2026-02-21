@@ -6,7 +6,7 @@ PLMS (Property Lead Management System) is a web-based application designed to ca
 
 The goal of this system is to centralise client enquiries from multiple sources, assign leads to sales agents, track communication history, and monitor lead status from initial enquiry to successful sale.
 
-This project is developed as part of the Industrial Consulting Project module.
+This project is developed as part of the Industrial Consulting Project module at Solent Univeristy.
 
 ---
 
