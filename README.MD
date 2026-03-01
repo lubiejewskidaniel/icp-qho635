@@ -28,7 +28,7 @@ The system will follow an MVP-first approach and will be developed incrementally
 
 This project is developed collaboratively by a team of 5 members:
 
-- Daniel Lubiejewski
+- Daniel Lubiejewski - Project Manager
 - Maria Vladimirova
 - Giordano Zanolla
 - Elena Michaela Vintilla
