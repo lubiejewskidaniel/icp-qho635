@@ -1,36 +1,143 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# PLMS – Property Lead Management System
 
-## Getting Started
+## 📌 Project Overview
 
-First, run the development server:
+PLMS (Property Lead Management System) is a web-based application designed to capture, manage, track and convert property sales leads.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+The goal of this system is to centralise client enquiries from multiple sources, assign leads to sales agents, track communication history, and monitor lead status from initial enquiry to successful sale.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+This project is developed as part of the Industrial Consulting Project module at Solent Univeristy.
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+---
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## 🎯 Purpose of the Application
 
-## Learn More
+The application aims to:
 
-To learn more about Next.js, take a look at the following resources:
+- Improve lead tracking and visibility
+- Support structured sales pipeline management
+- Enable role-based access for sales agents and managers
+- Track activities such as calls, emails, meetings and follow-ups
+- Provide basic reporting and performance overview
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+The system will follow an MVP-first approach and will be developed incrementally across multiple sprints.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+---
 
-## Deploy on Vercel
+## 👥 Project Team
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+This project is developed collaboratively by a team of 5 members:
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- Daniel Lubiejewski - Project Manager
+- Maria Vladimirova
+- Giordano Zanolla
+- Elena Michaela Vintilla
+- Kacper Zaleski
+
+The project is carried out as a fully remote collaboration.  
+Team members work asynchronously and coordinate tasks using:
+
+- Git & GitHub for version control
+- Jira Software for task management
+- WhatsApp for daily communication and updates
+- Online meetings (e.g., Webex) for sprint alignment and reviews
+
+The team follows a structured workflow with clearly defined feature ownership to ensure accountability, transparency and efficient delivery.
+
+---
+
+## 🛠 Technology Stack
+
+### Frontend
+
+- React.js
+- Next.js
+
+> TypeScript will not be used in this project, as not all team members are familiar with it. The project will be developed using JavaScript to ensure equal contribution and accessibility for all team members.
+
+---
+
+### Backend Services
+
+- Firebase
+  - Firebase Authentication
+  - Firestore Database
+  - Firebase Storage
+
+---
+
+### Email Service
+
+- SMTP (SendGrid / Mailgun / Custom SMTP)
+
+---
+
+### Optional Integrations (Future Scope)
+
+- WhatsApp
+- SMS notifications
+
+---
+
+### Hosting & Deployment
+
+- Vercel (Next.js frontend)
+- Firebase (backend services)
+
+---
+
+## 🚀 Development Approach
+
+The project is structured into three sprints:
+
+1. Requirements & Planning
+2. Proof of Concept
+3. MVP Implementation
+
+The team follows a feature-ownership model, where each member is responsible for specific functional areas of the system.
+
+---
+
+## 📂 Project Status
+
+Currently in Sprint 1 – Requirements & Planning Phase.
+
+---
+
+## 📝 Commit Convention - IMPORTANT
+
+This project follows the **Conventional Commits** standard to keep version control structured and professional.
+We use the following prefixes in commit messages:
+
+- **chore:** organisational changes, documentation updates, configuration changes  
+  _(pdating README, project setup, config files)_
+
+- **feat:** new feature implementation  
+  _(adding login functionality, creating lead dashboard)_
+
+- **fix:** bug fixes  
+  _(fixing login validation issue, correcting status update logic)_
+
+- **refactor:** code restructuring without changing functionality  
+  _(improving folder structure, cleaning up duplicated logic)_
+
+**To maintain high-quality version control, commit messages must:**
+
+- Be clear and descriptive
+- Explain what was changed and why
+- Use present tense (e.g., add login validation instead of added)
+- Avoid vague messages like:
+  ❌ update
+  ❌ fix stuff
+  ❌ changes
+- Focus on one logical change per commit
+
+Using this structure ensures:
+
+- Clear and readable commit history
+- Easier collaboration within the team
+- Better tracking of project progress
+- Cleaner pull requests and code reviews
+- Alignment with industry standards
+
+This approach reflects professional development practices used in real-world software projects.
