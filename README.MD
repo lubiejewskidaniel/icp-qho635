@@ -122,14 +122,15 @@ We use the following prefixes in commit messages:
   _(improving folder structure, cleaning up duplicated logic)_
 
 **To maintain high-quality version control, commit messages must:**
- - Be clear and descriptive
- - Explain what was changed and why
- - Use present tense (e.g., add login validation instead of added)
- - Avoid vague messages like:
+
+- Be clear and descriptive
+- Explain what was changed and why
+- Use present tense (e.g., add login validation instead of added)
+- Avoid vague messages like:
   ❌ update
   ❌ fix stuff
   ❌ changes
- - Focus on one logical change per commit
+- Focus on one logical change per commit
 
 Using this structure ensures:
 
