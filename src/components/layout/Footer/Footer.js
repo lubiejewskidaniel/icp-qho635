@@ -8,7 +8,7 @@ export default function Footer() {
 				<span className={styles.copy}>© 2024 PLMS</span>
 
 				<div className={styles.links}>
-					<Link href="privacy-policy">Privacy & Cookies Policy</Link>
+					<Link href="/privacy-policy">Privacy & Cookies Policy</Link>
 					<Link href="/contact">Contact</Link>
 				</div>
 			</div>
