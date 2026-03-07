@@ -1,0 +1,114 @@
+.page {
+	background-image: url("/contact-bg.jpg");
+	background-size: cover;
+	background-position: center;
+	background-repeat: no-repeat;
+
+	padding: 40px 80px 40px;
+	display: flex;
+	justify-content: center;
+	position: relative;
+}
+
+.page::before {
+	content: "";
+	position: absolute;
+	inset: 0;
+	background: rgba(15, 23, 42, 0.35);
+	z-index: 0;
+}
+
+.container {
+	position: relative;
+	z-index: 1;
+	width: 100%;
+	background: rgba(255, 255, 255, 0.683);
+	padding: 36px;
+	border-radius: 20px;
+	box-shadow: 0 20px 60px rgba(15, 23, 42, 0.15);
+}
+
+.header {
+	margin-bottom: 40px;
+	text-align: center;
+}
+
+.header h1 {
+	font-size: 36px;
+	font-weight: 700;
+	margin-bottom: 16px;
+	color: #0f172a;
+}
+
+.intro {
+	font-size: 16px;
+	line-height: 1.7;
+	color: #334155;
+	max-width: 600px;
+	margin: 0 auto;
+}
+
+.section {
+	margin-bottom: 40px;
+	padding-bottom: 24px;
+	border-bottom: 1px solid #64af19;
+}
+
+.section h2 {
+	font-size: 20px;
+	margin-bottom: 12px;
+	color: #0f172a;
+}
+
+.section p {
+	font-size: 15px;
+	line-height: 1.7;
+	color: #111f31;
+}
+
+.contact {
+	font-weight: 600;
+	color: #2563eb;
+	cursor: pointer;
+}
+
+.contact:hover {
+	text-decoration: underline;
+}
+
+@media (max-width: 1024px) {
+	.page {
+		padding: 50px 40px 70px;
+	}
+
+	.container {
+		padding: 40px 40px;
+	}
+}
+
+@media (max-width: 768px) {
+	.page {
+		padding: 40px 16px 60px;
+	}
+
+	.container {
+		padding: 32px 20px;
+		border-radius: 14px;
+	}
+
+	.header h1 {
+		font-size: 28px;
+	}
+
+	.intro {
+		font-size: 15px;
+	}
+
+	.section h2 {
+		font-size: 18px;
+	}
+
+	.section p {
+		font-size: 14px;
+	}
+}
