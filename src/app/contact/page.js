@@ -1,4 +1,4 @@
-import ContactContent from "@/components/legal/ContactContent/ContactContent";
+import ContactContent from "@/features/Contact/ContactContent";
 
 export const metadata = {
 	title: "Contact",
