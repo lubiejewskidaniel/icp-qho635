@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import styles from "./LoginForm.module.css";
+import Link from "next/link";
 
 export default function LoginForm() {
 	const [email, setEmail] = useState("");
@@ -66,7 +67,7 @@ export default function LoginForm() {
 				</form>
 
 				<div className={styles.links}>
-					<a href="/login/reset">Forgot password?</a>
+					<Link href="/login/reset">Forgot password?</Link>
 				</div>
 			</div>
 		</div>
