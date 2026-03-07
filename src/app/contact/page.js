@@ -1,4 +1,4 @@
-import ContactContent from "@/features/Contact/ContactContent";
+import ContactContent from "@/features/contact/ContactContent/ContactContent";
 
 export const metadata = {
 	title: "Contact",
