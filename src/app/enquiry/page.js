@@ -1,4 +1,4 @@
-import EnquiryForm from "@/features/enquiry/components/EnquiryForm/EnquiryForm";
+import EnquiryForm from "@/features/enquiry/EnquiryForm/EnquiryForm";
 
 export const metadata = {
 	title: "Enquiry",
