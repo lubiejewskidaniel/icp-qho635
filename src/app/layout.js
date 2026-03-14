@@ -31,11 +31,7 @@ export const metadata = {
 export default function RootLayout({ children }) {
 	return (
 		<html lang="en">
-			<body className="app">
-				<MainLayout>
-					<main>{children}</main>
-				</MainLayout>
-			</body>
+			<body className="app">{children}</body>
 		</html>
 	);
 }
