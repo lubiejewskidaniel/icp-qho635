@@ -4,16 +4,18 @@ import { createContext, useContext, useEffect, useState } from "react";
 import { auth } from "@/lib/firebase/config";
 import { onAuthStateChanged } from "firebase/auth";
 import { getUserRole } from "@/services/users/userService";
+import { getUserData } from "@/services/users/userService";
 
 // Context used to share authentication state across the application
 const AuthContext = createContext();
 
 // AuthProvider listens to Firebase authentication state
-// and provides user, role and loading state to the whole app.
+// and provides user,name, role and loading state to the whole app.
 
 export function AuthProvider({ children }) {
 	const [user, setUser] = useState(null);
 	const [role, setRole] = useState(null);
+	const [name, setName] = useState(null);
 	const [loading, setLoading] = useState(true);
 
 	useEffect(() => {
@@ -22,6 +24,7 @@ export function AuthProvider({ children }) {
 			if (!firebaseUser) {
 				setUser(null);
 				setRole(null);
+				setName(null);
 				setLoading(false);
 				return;
 			}
@@ -30,9 +33,11 @@ export function AuthProvider({ children }) {
 			setUser(firebaseUser);
 
 			try {
-				// Fetch user role from Firestore
-				const role = await getUserRole(firebaseUser.uid);
-				setRole(role);
+				// Fetch user role and name from Firestore
+				const userData = await getUserData(firebaseUser.uid);
+
+				setRole(userData?.role ?? null);
+				setName(userData?.name ?? null);
 			} catch (error) {
 				console.error("AuthProvider: failed to fetch user role", error); // log for developer in case of error
 				setRole(null); // prevent loading previous user role in case of Firebase error - safety reasons
@@ -46,7 +51,7 @@ export function AuthProvider({ children }) {
 
 	// below we share authentication state with the entire application
 	return (
-		<AuthContext.Provider value={{ user, role, loading }}>
+		<AuthContext.Provider value={{ user, role, name, loading }}>
 			{children}
 		</AuthContext.Provider>
 	);
