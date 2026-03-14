@@ -26,5 +26,15 @@ export default function Dashboard() {
 		return <ManagerDashboard />;
 	}
 
-	return <AgentDashboard />;
+	if (role === "agent") {
+		return <AgentDashboard />;
+	}
+
+	// fallback for unexpected roles when role = undefined or role = "admin"
+	// or role = "" or role = null
+	return (
+		<p>
+			Your account role is not recognized. Please contact the administrator.
+		</p>
+	);
 }
