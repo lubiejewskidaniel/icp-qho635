@@ -5,7 +5,7 @@ import styles from "./LoginForm.module.css";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { login } from "@/lib/firebase/auth";
-import { useAuth } from "@/features/auth/AuthProvider/AuthProvider";
+import { useAuth } from "@/providers/AuthProvider/AuthProvider";
 import { useEffect } from "react";
 
 export default function LoginForm() {

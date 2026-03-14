@@ -4,7 +4,7 @@
 // depending on the authenticated user's role (agent or manager).
 // It also handles loading and error states while authentication data is being resolved.
 
-import { useAuth } from "@/features/auth/AuthProvider/AuthProvider";
+import { useAuth } from "@/providers/AuthProvider/AuthProvider";
 
 import AgentDashboard from "../AgentDashboard/AgentDashboard";
 import ManagerDashboard from "../ManagerDashboard/ManagerDashboard";

@@ -1,4 +1,4 @@
-import { AuthProvider } from "@/features/auth/AuthProvider/AuthProvider";
+import { AuthProvider } from "@/providers/AuthProvider/AuthProvider";
 import "../styles/globals.css";
 import MainLayout from "@/components/layout/MainLayout/MainLayout";
 
