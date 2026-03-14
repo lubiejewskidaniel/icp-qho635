@@ -1,4 +1,4 @@
-import { signInWithEmailAndPassword } from "firebase/auth";
+import { signInWithEmailAndPassword, signOut } from "firebase/auth";
 import { auth } from "@/lib/firebase/config";
 
 export async function login(email, password) {
@@ -9,4 +9,8 @@ export async function login(email, password) {
 	);
 
 	return userCredential.user;
+}
+
+export async function logout() {
+	await signOut(auth);
 }
