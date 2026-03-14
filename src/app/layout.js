@@ -1,3 +1,4 @@
+import { AuthProvider } from "@/features/auth/AuthProvider/AuthProvider";
 import "../styles/globals.css";
 import MainLayout from "@/components/layout/MainLayout/MainLayout";
 
@@ -31,7 +32,9 @@ export const metadata = {
 export default function RootLayout({ children }) {
 	return (
 		<html lang="en">
-			<body className="app">{children}</body>
+			<body className="app">
+				<AuthProvider>{children}</AuthProvider>
+			</body>
 		</html>
 	);
 }
