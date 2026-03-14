@@ -4,7 +4,7 @@ import { useState } from "react";
 import styles from "./LoginForm.module.css";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { login } from "@/lib/firebase/auth";
+import { login } from "@/services/auth/authService";
 import { useAuth } from "@/providers/AuthProvider/AuthProvider";
 import { useEffect } from "react";
 

@@ -1,5 +1,5 @@
 import { doc, getDoc } from "firebase/firestore";
-import { db } from "./config";
+import { db } from "@/lib/firebase/config";
 
 // Fetches the user's role from Firestore using their UID.
 
