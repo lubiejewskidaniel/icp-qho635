@@ -3,7 +3,6 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import { auth } from "@/lib/firebase/config";
 import { onAuthStateChanged } from "firebase/auth";
-import { getUserRole } from "@/services/users/userService";
 import { getUserData } from "@/services/users/userService";
 
 // Context used to share authentication state across the application
