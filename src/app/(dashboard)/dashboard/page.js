@@ -1,4 +1,4 @@
-import Dashboard from "@/features/dashboard/Dashboard/Dashboard";
+import Dashboard from "@/components/layout/DashboardLayout/DashboardLayout";
 
 export default function DashboardPage() {
 	return <Dashboard />;
