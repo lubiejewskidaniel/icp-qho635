@@ -3,6 +3,10 @@
 import { useState } from "react";
 import styles from "./LoginForm.module.css";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { login } from "@/services/auth/authService";
+import { useAuth } from "@/providers/AuthProvider/AuthProvider";
+import { useEffect } from "react";
 
 export default function LoginForm() {
 	const [email, setEmail] = useState("");
@@ -10,18 +14,22 @@ export default function LoginForm() {
 	const [loading, setLoading] = useState(false);
 	const [error, setError] = useState("");
 
+	const router = useRouter();
+	const { user } = useAuth();
+	useEffect(() => {
+		if (user) {
+			router.push("/dashboard");
+		}
+	}, [user, router]);
+
 	const handleSubmit = async (e) => {
 		e.preventDefault();
 		setLoading(true);
 		setError("");
 
 		try {
-			console.log("Login attempt:", email, password);
-
-			// login simulation for now
-			await new Promise((res) => setTimeout(res, 1000));
-
-			// and here will be redirect later on
+			await login(email, password);
+			router.push("/dashboard");
 		} catch (err) {
 			setError("Invalid email or password.");
 		} finally {
@@ -36,22 +44,24 @@ export default function LoginForm() {
 
 				<form onSubmit={handleSubmit}>
 					<div className={styles.field}>
-						<label>Email</label>
+						<label htmlFor="email">Email</label>
 						<input
 							type="email"
 							value={email}
 							onChange={(e) => setEmail(e.target.value)}
 							required
+							disabled={loading}
 						/>
 					</div>
 
 					<div className={styles.field}>
-						<label>Password</label>
+						<label htmlFor="password">Password</label>
 						<input
 							type="password"
 							value={password}
 							onChange={(e) => setPassword(e.target.value)}
 							required
+							disabled={loading}
 						/>
 					</div>
 

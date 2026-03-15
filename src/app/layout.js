@@ -1,3 +1,4 @@
+import { AuthProvider } from "@/providers/AuthProvider/AuthProvider";
 import "../styles/globals.css";
 import MainLayout from "@/components/layout/MainLayout/MainLayout";
 
@@ -32,9 +33,7 @@ export default function RootLayout({ children }) {
 	return (
 		<html lang="en">
 			<body className="app">
-				<MainLayout>
-					<main>{children}</main>
-				</MainLayout>
+				<AuthProvider>{children}</AuthProvider>
 			</body>
 		</html>
 	);
