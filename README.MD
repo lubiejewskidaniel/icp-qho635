@@ -101,7 +101,7 @@ The team follows a feature-ownership model, where each member is responsible for
 ## 📂 Project Status
 
 Sprint 1 – Requirements & Planning Phase. -> Finished.
-Currently in Sprint 2 – Development PoC
+Currently in Sprint 2 – Design & Development PoC
 
 ---
 
