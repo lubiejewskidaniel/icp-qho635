@@ -1,12 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import styles from "./LoginForm.module.css";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { login } from "@/services/auth/authService";
+import { login, sendVerificationEmail } from "@/services/auth/authService";
 import { useAuth } from "@/providers/AuthProvider/AuthProvider";
-import { useEffect } from "react";
 
 export default function LoginForm() {
 	const [email, setEmail] = useState("");
@@ -16,9 +15,14 @@ export default function LoginForm() {
 
 	const router = useRouter();
 	const { user } = useAuth();
+
 	useEffect(() => {
-		if (user) {
+		if (!user) return;
+
+		if (user.emailVerified) {
 			router.push("/dashboard");
+		} else {
+			router.push("/login/verify-email");
 		}
 	}, [user, router]);
 
@@ -28,7 +32,14 @@ export default function LoginForm() {
 		setError("");
 
 		try {
-			await login(email, password);
+			const loggedInUser = await login(email, password);
+
+			if (!loggedInUser.emailVerified) {
+				await sendVerificationEmail(loggedInUser);
+				router.push("/login/verify-email");
+				return;
+			}
+
 			router.push("/dashboard");
 		} catch (err) {
 			setError("Invalid email or password.");
@@ -46,6 +57,7 @@ export default function LoginForm() {
 					<div className={styles.field}>
 						<label htmlFor="email">Email</label>
 						<input
+							id="email"
 							type="email"
 							value={email}
 							onChange={(e) => setEmail(e.target.value)}
@@ -57,6 +69,7 @@ export default function LoginForm() {
 					<div className={styles.field}>
 						<label htmlFor="password">Password</label>
 						<input
+							id="password"
 							type="password"
 							value={password}
 							onChange={(e) => setPassword(e.target.value)}
