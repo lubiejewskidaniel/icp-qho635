@@ -3,9 +3,11 @@
 import Link from "next/link";
 import { logout } from "@/services/auth/authService";
 import { useRouter } from "next/navigation";
+import { useAuth } from "@/providers/AuthProvider/AuthProvider";
 
 export default function Sidebar() {
 	const router = useRouter();
+	const { role } = useAuth();
 
 	const handleLogout = async () => {
 		await logout();
@@ -28,12 +30,22 @@ export default function Sidebar() {
 					<li>
 						<Link href="/dashboard">Dashboard</Link>
 					</li>
+
 					<li>
 						<Link href="/dashboard/leads">Leads</Link>
 					</li>
-					<li>
-						<Link href="/dashboard/reports">Reports</Link>
-					</li>
+
+					{role === "manager" && (
+						<li>
+							<Link href="/dashboard/reports">Reports</Link>
+						</li>
+					)}
+
+					{role === "manager" && (
+						<li>
+							<Link href="/dashboard/agents">Agents</Link>
+						</li>
+					)}
 				</ul>
 			</nav>
 

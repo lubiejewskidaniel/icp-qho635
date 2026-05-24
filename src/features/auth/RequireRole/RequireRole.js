@@ -4,9 +4,9 @@ import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/providers/AuthProvider/AuthProvider";
 
-export default function RequireVerifiedUser({ children }) {
+export default function RequireRole({ allowedRoles, children }) {
 	const router = useRouter();
-	const { user, loading } = useAuth();
+	const { user, role, loading } = useAuth();
 
 	useEffect(() => {
 		if (loading) return;
@@ -20,9 +20,17 @@ export default function RequireVerifiedUser({ children }) {
 			router.push("/login/verify-email");
 			return;
 		}
-	}, [user, loading, router]);
+
+		if (!allowedRoles.includes(role)) {
+			router.push("/dashboard");
+		}
+	}, [user, role, loading, allowedRoles, router]);
 
 	if (loading || !user || !user.emailVerified) {
+		return null;
+	}
+
+	if (!allowedRoles.includes(role)) {
 		return null;
 	}
 
