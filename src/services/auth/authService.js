@@ -2,6 +2,7 @@ import {
 	signInWithEmailAndPassword,
 	signOut,
 	sendEmailVerification,
+	sendPasswordResetEmail,
 	reload,
 } from "firebase/auth";
 import { auth } from "@/lib/firebase/config";
@@ -40,4 +41,12 @@ export async function reloadCurrentUser(user) {
 	await reload(user);
 
 	return user;
+}
+
+export async function resetPassword(email) {
+	if (!email) {
+		throw new Error("Email is required.");
+	}
+
+	await sendPasswordResetEmail(auth, email);
 }
