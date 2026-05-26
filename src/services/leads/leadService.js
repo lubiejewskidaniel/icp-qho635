@@ -55,3 +55,33 @@ export async function getAssignedLeads(agentId) {
 		...doc.data(),
 	}));
 }
+
+export async function createInternalLead(data) {
+	const docRef = await addDoc(collection(db, "leads"), {
+		fullName: data.fullName,
+		email: data.email,
+		phone: data.phone,
+		country: data.country,
+		city: data.city,
+
+		propertyType: data.propertyType,
+		location: data.location,
+		budgetRange: data.budgetRange,
+		purpose: data.purpose,
+		preferredContactMethod: data.preferredContactMethod,
+
+		source: "manual",
+		assignedAgentId: null,
+		createdBy: data.createdBy,
+
+		status: "New",
+		lastContactDate: null,
+		lastActivityAt: serverTimestamp(),
+		nextFollowUpDate: null,
+
+		createdAt: serverTimestamp(),
+		updatedAt: serverTimestamp(),
+	});
+
+	return docRef.id;
+}
