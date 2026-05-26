@@ -28,7 +28,7 @@ export default function Sidebar() {
 			<nav>
 				<ul style={{ listStyle: "none", padding: 0 }}>
 					<li>
-						<Link href="/dashboard">Dashboard</Link>
+						<Link href="/dashboard">My Dashboard</Link>
 					</li>
 
 					<li>
