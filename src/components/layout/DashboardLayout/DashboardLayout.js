@@ -3,13 +3,13 @@
 import Sidebar from "./Sidebar";
 import DashboardHeader from "./DashboardHeader";
 
-export default function DashboardLayout({ children, role }) {
+export default function DashboardLayout({ children }) {
 	return (
 		<div style={{ display: "flex", minHeight: "100vh" }}>
-			<Sidebar role={role} />
+			<Sidebar />
 
 			<div style={{ flex: 1 }}>
-				<DashboardHeader role={role} />
+				<DashboardHeader />
 
 				<main style={{ padding: "2rem" }}>{children}</main>
 			</div>
