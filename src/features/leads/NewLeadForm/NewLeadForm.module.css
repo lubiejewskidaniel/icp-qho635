@@ -1,0 +1,133 @@
+.wrapper {
+	width: 100%;
+}
+
+.card {
+	background: white;
+	border-radius: 16px;
+	padding: 32px;
+	box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
+	border: 1px solid #e2e8f0;
+}
+
+.card h1 {
+	font-size: 28px;
+	margin-bottom: 6px;
+	color: #0f172a;
+}
+
+.description {
+	color: #64748b;
+	margin-bottom: 24px;
+}
+
+.card h2 {
+	font-size: 18px;
+	margin: 24px 0 12px;
+	color: #0f172a;
+}
+
+.card fieldset {
+	border: none;
+	padding: 0;
+	margin: 0;
+}
+
+.grid {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: 14px;
+}
+
+.grid input,
+.grid select {
+	width: 100%;
+	padding: 11px 12px;
+	border-radius: 8px;
+	border: 1px solid #cbd5e1;
+	font-size: 14px;
+}
+
+.grid input:focus,
+.grid select:focus {
+	outline: none;
+	border-color: #2563eb;
+}
+
+.formRow {
+	margin-top: 20px;
+}
+
+.rowLabel {
+	display: block;
+	font-size: 14px;
+	font-weight: 600;
+	color: #334155;
+	margin-bottom: 10px;
+}
+
+.radioGroup {
+	display: flex;
+	gap: 18px;
+}
+
+.radioOption {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	font-size: 14px;
+	color: #334155;
+}
+
+.error {
+	color: #dc2626;
+	font-size: 14px;
+	margin-top: 16px;
+}
+
+.actions {
+	display: flex;
+	justify-content: flex-end;
+	gap: 12px;
+	margin-top: 28px;
+}
+
+.cancelButton,
+.submitButton {
+	padding: 10px 16px;
+	border-radius: 8px;
+	font-weight: 600;
+	cursor: pointer;
+}
+
+.cancelButton {
+	background: white;
+	border: 1px solid #cbd5e1;
+	color: #334155;
+}
+
+.submitButton {
+	border: none;
+	background: #2563eb;
+	color: white;
+}
+
+.submitButton:disabled {
+	opacity: 0.6;
+	cursor: not-allowed;
+}
+
+@media (max-width: 768px) {
+	.grid {
+		grid-template-columns: 1fr;
+	}
+
+	.actions {
+		flex-direction: column-reverse;
+	}
+
+	.cancelButton,
+	.submitButton {
+		width: 100%;
+	}
+}
