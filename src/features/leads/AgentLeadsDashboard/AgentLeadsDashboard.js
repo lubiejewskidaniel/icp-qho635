@@ -3,12 +3,12 @@
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useAuth } from "@/providers/AuthProvider/AuthProvider";
-import { getAssignedLeads } from "@/services/leads/leadService";
+import { getAllLeads, getAssignedLeads } from "@/services/leads/leadService";
 import { LEAD_STATUS_OPTIONS } from "@/constants/leadStatuses";
 import styles from "./AgentLeadsDashboard.module.css";
 
 export default function AgentLeadsDashboard() {
-	const { user } = useAuth();
+	const { user, role } = useAuth();
 
 	const [leads, setLeads] = useState([]);
 	const [loading, setLoading] = useState(true);
@@ -20,7 +20,11 @@ export default function AgentLeadsDashboard() {
 
 		async function loadLeads() {
 			try {
-				const data = await getAssignedLeads(user.uid);
+				const data =
+					role === "manager"
+						? await getAllLeads()
+						: await getAssignedLeads(user.uid);
+
 				setLeads(data);
 			} finally {
 				setLoading(false);
@@ -28,7 +32,7 @@ export default function AgentLeadsDashboard() {
 		}
 
 		loadLeads();
-	}, [user]);
+	}, [user, role]);
 
 	const filteredLeads = useMemo(() => {
 		return leads.filter((lead) => {
@@ -54,10 +58,13 @@ export default function AgentLeadsDashboard() {
 		<section className={styles.wrapper}>
 			<div className={styles.header}>
 				<div>
-					<h1>My Leads</h1>
-					<p>Manage your assigned property leads.</p>
+					<h1>{role === "manager" ? "All Leads" : "My Leads"}</h1>
+					<p>
+						{role === "manager"
+							? "Manage all property leads."
+							: "Manage your assigned property leads."}
+					</p>
 				</div>
-
 				<Link href="/dashboard/leads/new" className={styles.addButton}>
 					Add Lead
 				</Link>
@@ -70,12 +77,12 @@ export default function AgentLeadsDashboard() {
 					value={search}
 					onChange={(e) => setSearch(e.target.value)}
 				/>
-
 				<select
 					value={statusFilter}
 					onChange={(e) => setStatusFilter(e.target.value)}
 				>
 					<option value="All">All statuses</option>
+
 					{LEAD_STATUS_OPTIONS.map((status) => (
 						<option key={status} value={status}>
 							{status}
@@ -93,15 +100,34 @@ export default function AgentLeadsDashboard() {
 					>
 						<div className={styles.cardHeader}>
 							<h3>{lead.fullName}</h3>
+
 							<span>{lead.status}</span>
 						</div>
 
-						<p>{lead.email}</p>
-						<p>{lead.phone}</p>
 						<p>
-							{lead.propertyType} · {lead.location}
+							<strong>{lead.assignedAgentName ? "Agent:" : "Source:"}</strong>{" "}
+							{lead.assignedAgentName || lead.source || "website"}
 						</p>
-						<p>Budget: {lead.budgetRange}</p>
+
+						<p>
+							<strong>Phone:</strong> {lead.phone || "-"}
+						</p>
+
+						<p>
+							<strong>Email:</strong> {lead.email || "-"}
+						</p>
+
+						<p>
+							<strong>Property:</strong> {lead.propertyType || "-"}
+						</p>
+
+						<p>
+							<strong>Location:</strong> {lead.location || "-"}
+						</p>
+
+						<p>
+							<strong>Budget:</strong> {lead.budgetRange || "-"}
+						</p>
 					</Link>
 				))}
 
