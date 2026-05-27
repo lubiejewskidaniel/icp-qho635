@@ -20,7 +20,7 @@ export const metadata = {
 	],
 
 	icons: {
-		icon: "/icon.svg",
+		icon: "/logo.svg",
 	},
 
 	robots: {
