@@ -3,12 +3,15 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 
+import styles from "./NewLeadForm.module.css";
+
 import { useAuth } from "@/providers/AuthProvider/AuthProvider";
 
 import { createInternalLead } from "@/services/leads/leadService";
 
 import {
 	PROPERTY_TYPES,
+	BUDGET_RANGES,
 	LEAD_PURPOSES,
 	CONTACT_METHODS,
 } from "@/constants/leadFormOptions";
@@ -20,25 +23,25 @@ export default function NewLeadForm() {
 	const [loading, setLoading] = useState(false);
 	const [error, setError] = useState("");
 
-	const [form, setForm] = useState({
+	const [formData, setFormData] = useState({
 		fullName: "",
 		email: "",
 		phone: "",
 		country: "",
 		city: "",
 
-		propertyType: PROPERTY_TYPES[0],
+		propertyType: "",
 		location: "",
-		budgetRange: "",
+		budget: "",
+		purpose: "",
 
-		purpose: LEAD_PURPOSES[0],
-		preferredContactMethod: CONTACT_METHODS[0],
+		contactMethod: "email",
 	});
 
 	const handleChange = (e) => {
 		const { name, value } = e.target;
 
-		setForm((prev) => ({
+		setFormData((prev) => ({
 			...prev,
 			[name]: value,
 		}));
@@ -52,7 +55,18 @@ export default function NewLeadForm() {
 
 		try {
 			await createInternalLead({
-				...form,
+				fullName: formData.fullName,
+				email: formData.email,
+				phone: formData.phone,
+				country: formData.country,
+				city: formData.city,
+
+				propertyType: formData.propertyType,
+				location: formData.location,
+				budgetRange: formData.budget,
+				purpose: formData.purpose,
+				preferredContactMethod: formData.contactMethod,
+
 				createdBy: user.uid,
 			});
 
@@ -66,152 +80,163 @@ export default function NewLeadForm() {
 	};
 
 	return (
-		<section>
-			<h1>Add Lead</h1>
+		<div className={styles.wrapper}>
+			<div className={styles.card}>
+				<h1>Add Lead</h1>
 
-			<p>Create a new manual lead.</p>
+				<p className={styles.description}>
+					Create a new internal lead.
+				</p>
 
-			<form onSubmit={handleSubmit}>
-				<div>
-					<label htmlFor="fullName">Full name</label>
+				<form onSubmit={handleSubmit}>
+					<fieldset disabled={loading}>
+						<h2>Contact Details</h2>
 
-					<input
-						id="fullName"
-						name="fullName"
-						value={form.fullName}
-						onChange={handleChange}
-						required
-					/>
-				</div>
+						<div className={styles.grid}>
+							<input
+								name="fullName"
+								placeholder="Full Name"
+								value={formData.fullName}
+								onChange={handleChange}
+								required
+							/>
 
-				<div>
-					<label htmlFor="email">Email</label>
+							<input
+								name="email"
+								type="email"
+								placeholder="Email"
+								value={formData.email}
+								onChange={handleChange}
+								required
+							/>
 
-					<input
-						id="email"
-						name="email"
-						type="email"
-						value={form.email}
-						onChange={handleChange}
-						required
-					/>
-				</div>
+							<input
+								name="phone"
+								placeholder="Phone Number"
+								value={formData.phone}
+								onChange={handleChange}
+								required
+							/>
 
-				<div>
-					<label htmlFor="phone">Phone</label>
+							<input
+								name="country"
+								placeholder="Country"
+								value={formData.country}
+								onChange={handleChange}
+							/>
 
-					<input
-						id="phone"
-						name="phone"
-						value={form.phone}
-						onChange={handleChange}
-						required
-					/>
-				</div>
+							<input
+								name="city"
+								placeholder="City"
+								value={formData.city}
+								onChange={handleChange}
+							/>
+						</div>
 
-				<div>
-					<label htmlFor="country">Country</label>
+						<h2>Property Interest</h2>
 
-					<input
-						id="country"
-						name="country"
-						value={form.country}
-						onChange={handleChange}
-					/>
-				</div>
+						<div className={styles.grid}>
+							<select
+								name="propertyType"
+								value={formData.propertyType}
+								onChange={handleChange}
+								required
+							>
+								<option value="">Select property type</option>
 
-				<div>
-					<label htmlFor="city">City</label>
+								{PROPERTY_TYPES.map((type) => (
+									<option key={type} value={type}>
+										{type}
+									</option>
+								))}
+							</select>
 
-					<input
-						id="city"
-						name="city"
-						value={form.city}
-						onChange={handleChange}
-					/>
-				</div>
+							<input
+								name="location"
+								placeholder="Preferred location"
+								value={formData.location}
+								onChange={handleChange}
+							/>
 
-				<div>
-					<label htmlFor="propertyType">Property type</label>
+							<select
+								name="budget"
+								value={formData.budget}
+								onChange={handleChange}
+							>
+								<option value="">Select budget range</option>
 
-					<select
-						id="propertyType"
-						name="propertyType"
-						value={form.propertyType}
-						onChange={handleChange}
-					>
-						{PROPERTY_TYPES.map((type) => (
-							<option key={type} value={type}>
-								{type}
-							</option>
-						))}
-					</select>
-				</div>
+								{BUDGET_RANGES.map((range) => (
+									<option key={range} value={range}>
+										{range}
+									</option>
+								))}
+							</select>
 
-				<div>
-					<label htmlFor="location">Location</label>
+							<select
+								name="purpose"
+								value={formData.purpose}
+								onChange={handleChange}
+								required
+							>
+								<option value="">Select purpose</option>
 
-					<input
-						id="location"
-						name="location"
-						value={form.location}
-						onChange={handleChange}
-					/>
-				</div>
+								{LEAD_PURPOSES.map((purpose) => (
+									<option key={purpose} value={purpose}>
+										{purpose}
+									</option>
+								))}
+							</select>
+						</div>
 
-				<div>
-					<label htmlFor="budgetRange">Budget range</label>
+						<div className={styles.formRow}>
+							<label className={styles.rowLabel}>
+								Preferred contact method
+							</label>
 
-					<input
-						id="budgetRange"
-						name="budgetRange"
-						value={form.budgetRange}
-						onChange={handleChange}
-					/>
-				</div>
+							<div className={styles.radioGroup}>
+								{CONTACT_METHODS.map((method) => (
+									<label
+										key={method.value}
+										className={styles.radioOption}
+									>
+										<input
+											type="radio"
+											name="contactMethod"
+											value={method.value}
+											checked={
+												formData.contactMethod === method.value
+											}
+											onChange={handleChange}
+										/>
 
-				<div>
-					<label htmlFor="purpose">Purpose</label>
+										{method.label}
+									</label>
+								))}
+							</div>
+						</div>
 
-					<select
-						id="purpose"
-						name="purpose"
-						value={form.purpose}
-						onChange={handleChange}
-					>
-						{LEAD_PURPOSES.map((purpose) => (
-							<option key={purpose} value={purpose}>
-								{purpose}
-							</option>
-						))}
-					</select>
-				</div>
+						{error && <p className={styles.error}>{error}</p>}
 
-				<div>
-					<label htmlFor="preferredContactMethod">
-						Preferred contact method
-					</label>
+						<div className={styles.actions}>
+							<button
+								type="button"
+								className={styles.cancelButton}
+								onClick={() => router.push("/dashboard/leads")}
+							>
+								Cancel
+							</button>
 
-					<select
-						id="preferredContactMethod"
-						name="preferredContactMethod"
-						value={form.preferredContactMethod}
-						onChange={handleChange}
-					>
-						{CONTACT_METHODS.map((method) => (
-							<option key={method} value={method}>
-								{method}
-							</option>
-						))}
-					</select>
-				</div>
-
-				{error && <p>{error}</p>}
-
-				<button type="submit" disabled={loading}>
-					{loading ? "Creating..." : "Create Lead"}
-				</button>
-			</form>
-		</section>
+							<button
+								type="submit"
+								className={styles.submitButton}
+								disabled={loading}
+							>
+								{loading ? "Creating..." : "Create Lead"}
+							</button>
+						</div>
+					</fieldset>
+				</form>
+			</div>
+		</div>
 	);
 }
