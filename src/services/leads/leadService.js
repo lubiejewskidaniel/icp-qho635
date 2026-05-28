@@ -260,8 +260,8 @@ export async function importCsvLeads(rows, meta = {}) {
 
 			source: "csv",
 
-			assignedAgentId: row.assignedAgentId || meta.createdBy || null,
-			assignedAgentName: row.assignedAgentName || meta.createdByName || null,
+			assignedAgentId: row.assignedAgentId || null,
+			assignedAgentName: row.assignedAgentName || null,
 
 			createdBy: meta.createdBy || null,
 

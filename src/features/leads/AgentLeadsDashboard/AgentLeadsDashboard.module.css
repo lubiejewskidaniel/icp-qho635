@@ -102,3 +102,31 @@
 	gap: 20px;
 	align-items: center;
 }
+
+.pagination {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	gap: 16px;
+	margin-top: 24px;
+}
+
+.pagination button {
+	padding: 8px 14px;
+	border: none;
+	border-radius: 8px;
+	background: #2563eb;
+	color: white;
+	cursor: pointer;
+	font-weight: 600;
+}
+
+.pagination button:disabled {
+	opacity: 0.5;
+	cursor: not-allowed;
+}
+
+.pagination span {
+	font-size: 14px;
+	color: #475569;
+}

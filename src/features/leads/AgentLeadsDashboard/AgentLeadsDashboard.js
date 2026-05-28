@@ -9,6 +9,8 @@ import { LEAD_STATUS_OPTIONS } from "@/constants/leadStatuses";
 import { LEAD_SOURCE_OPTIONS } from "@/constants/leadSources";
 import styles from "./AgentLeadsDashboard.module.css";
 
+const LEADS_PER_PAGE = 10;
+
 export default function AgentLeadsDashboard() {
 	const { user, role } = useAuth();
 
@@ -20,6 +22,7 @@ export default function AgentLeadsDashboard() {
 	const [statusFilter, setStatusFilter] = useState("All");
 	const [agentFilter, setAgentFilter] = useState("All");
 	const [sourceFilter, setSourceFilter] = useState("All");
+	const [currentPage, setCurrentPage] = useState(1);
 
 	useEffect(() => {
 		if (!user?.uid) return;
@@ -51,6 +54,10 @@ export default function AgentLeadsDashboard() {
 		loadAgents();
 	}, [role]);
 
+	useEffect(() => {
+		setCurrentPage(1);
+	}, [search, statusFilter, agentFilter, sourceFilter]);
+
 	const filteredLeads = useMemo(() => {
 		return leads.filter((lead) => {
 			const searchValue = search.toLowerCase();
@@ -72,6 +79,13 @@ export default function AgentLeadsDashboard() {
 			return matchesSearch && matchesStatus && matchesAgent && matchesSource;
 		});
 	}, [leads, search, statusFilter, agentFilter, sourceFilter]);
+
+	const totalPages = Math.ceil(filteredLeads.length / LEADS_PER_PAGE);
+
+	const paginatedLeads = filteredLeads.slice(
+		(currentPage - 1) * LEADS_PER_PAGE,
+		currentPage * LEADS_PER_PAGE,
+	);
 
 	if (loading) {
 		return <p>Loading leads...</p>;
@@ -156,7 +170,7 @@ export default function AgentLeadsDashboard() {
 			</div>
 
 			<div className={styles.grid}>
-				{filteredLeads.map((lead) => (
+				{paginatedLeads.map((lead) => (
 					<Link
 						key={lead.id}
 						href={`/dashboard/leads/${lead.id}`}
@@ -195,8 +209,34 @@ export default function AgentLeadsDashboard() {
 					</Link>
 				))}
 
-				{filteredLeads.length === 0 && <p>No leads found.</p>}
+				{paginatedLeads.length === 0 && <p>No leads found.</p>}
 			</div>
+
+			{filteredLeads.length > LEADS_PER_PAGE && (
+				<div className={styles.pagination}>
+					<button
+						type="button"
+						onClick={() => setCurrentPage((page) => Math.max(page - 1, 1))}
+						disabled={currentPage === 1}
+					>
+						Previous
+					</button>
+
+					<span>
+						Page {currentPage} of {totalPages}
+					</span>
+
+					<button
+						type="button"
+						onClick={() =>
+							setCurrentPage((page) => Math.min(page + 1, totalPages))
+						}
+						disabled={currentPage === totalPages}
+					>
+						Next
+					</button>
+				</div>
+			)}
 		</section>
 	);
 }
