@@ -27,6 +27,9 @@ export async function createLead(data) {
 
 		source: data.source || "website",
 		assignedAgentId: data.assignedAgentId || null,
+		assignedAgentName: data.assignedAgentName || null,
+
+		createdBy: data.createdBy || null,
 
 		status: data.status || LEAD_STATUSES.NEW,
 
@@ -39,6 +42,16 @@ export async function createLead(data) {
 	});
 
 	return docRef.id;
+}
+
+export async function createInternalLead(data) {
+	return createLead({
+		...data,
+		source: "manual",
+		assignedAgentId: data.assignedAgentId || data.createdBy || null,
+		assignedAgentName: data.assignedAgentName || null,
+		status: data.status || LEAD_STATUSES.NEW,
+	});
 }
 
 export async function getAssignedLeads(agentId) {
@@ -56,32 +69,13 @@ export async function getAssignedLeads(agentId) {
 	}));
 }
 
-export async function createInternalLead(data) {
-	const docRef = await addDoc(collection(db, "leads"), {
-		fullName: data.fullName,
-		email: data.email,
-		phone: data.phone,
-		country: data.country,
-		city: data.city,
+export async function getAllLeads() {
+	const q = query(collection(db, "leads"), orderBy("lastActivityAt", "desc"));
 
-		propertyType: data.propertyType,
-		location: data.location,
-		budgetRange: data.budgetRange,
-		purpose: data.purpose,
-		preferredContactMethod: data.preferredContactMethod,
+	const snapshot = await getDocs(q);
 
-		source: "manual",
-		assignedAgentId: null,
-		createdBy: data.createdBy,
-
-		status: "New",
-		lastContactDate: null,
-		lastActivityAt: serverTimestamp(),
-		nextFollowUpDate: null,
-
-		createdAt: serverTimestamp(),
-		updatedAt: serverTimestamp(),
-	});
-
-	return docRef.id;
+	return snapshot.docs.map((doc) => ({
+		id: doc.id,
+		...doc.data(),
+	}));
 }
