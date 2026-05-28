@@ -1,7 +1,12 @@
-import { getAllLeads, getAssignedLeads } from "@/services/leads/leadService";
+import {
+	getAllLeads,
+	getAssignedLeads,
+	getRecentActivities,
+} from "@/services/leads/leadService";
 
 export async function getManagerDashboardStats() {
 	const leads = await getAllLeads();
+	const recentActivities = await getRecentActivities(5);
 
 	const totalLeads = leads.length;
 	const newLeads = leads.filter((lead) => lead.status === "New").length;
@@ -30,6 +35,7 @@ export async function getManagerDashboardStats() {
 		lostLeads,
 		conversionRate,
 		leadStatusCounts,
+		recentActivities,
 	};
 }
 

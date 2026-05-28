@@ -61,21 +61,60 @@ export default function ManagerDashboard() {
 				/>
 			</div>
 
-			<div className={styles.pipelineCard}>
-				<div className={styles.pipelineHeader}>
-					<div>
-						<h2>Lead Pipeline</h2>
-						<p>Leads grouped by current status.</p>
+			<div className={styles.dashboardGrid}>
+				<div className={styles.pipelineCard}>
+					<div className={styles.pipelineHeader}>
+						<div>
+							<h2>Lead Pipeline</h2>
+							<p>Leads grouped by current status.</p>
+						</div>
+					</div>
+
+					<div className={styles.pipelineList}>
+						{LEAD_STATUS_OPTIONS.map((status) => (
+							<div key={status} className={styles.pipelineItem}>
+								<span>{status}</span>
+								<strong>{stats.leadStatusCounts?.[status] || 0}</strong>
+							</div>
+						))}
 					</div>
 				</div>
 
-				<div className={styles.pipelineList}>
-					{LEAD_STATUS_OPTIONS.map((status) => (
-						<div key={status} className={styles.pipelineItem}>
-							<span>{status}</span>
-							<strong>{stats.leadStatusCounts?.[status] || 0}</strong>
+				<div className={styles.activityCard}>
+					<div className={styles.activityHeader}>
+						<div>
+							<h2>Recent Activity</h2>
+							<p>Latest updates across your leads.</p>
 						</div>
-					))}
+					</div>
+
+					{stats.recentActivities?.length === 0 ? (
+						<p className={styles.emptyState}>No recent activity yet.</p>
+					) : (
+						<div className={styles.activityList}>
+							{stats.recentActivities?.map((activity) => (
+								<div key={activity.id} className={styles.activityItem}>
+									<div className={styles.activityTopRow}>
+										<strong>{activity.type}</strong>
+
+										{activity.createdByName && (
+											<span>by {activity.createdByName}</span>
+										)}
+									</div>
+
+									<p>{activity.description}</p>
+
+									{activity.createdAt?.seconds && (
+										<div className={styles.activityDate}>
+											{new Date(
+												activity.createdAt.seconds * 1000,
+											).toLocaleString()}
+										</div>
+									)}
+								</div>
+							))}
+						</div>
+					)}
 				</div>
 			</div>
 		</section>
