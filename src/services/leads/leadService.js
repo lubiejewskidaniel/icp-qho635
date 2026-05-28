@@ -285,3 +285,18 @@ export async function importCsvLeads(rows, meta = {}) {
 		skipped,
 	};
 }
+
+export async function getRecentActivities(limitCount = 5) {
+	const q = query(
+		collection(db, "activities"),
+		orderBy("createdAt", "desc"),
+		limit(limitCount),
+	);
+
+	const snapshot = await getDocs(q);
+
+	return snapshot.docs.map((document) => ({
+		id: document.id,
+		...document.data(),
+	}));
+}
