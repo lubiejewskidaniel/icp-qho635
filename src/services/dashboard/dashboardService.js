@@ -11,12 +11,25 @@ export async function getManagerDashboardStats() {
 	const conversionRate =
 		totalLeads > 0 ? Math.round((wonLeads / totalLeads) * 100) : 0;
 
+	const leadStatusCounts = {};
+
+	leads.forEach((lead) => {
+		const status = lead.status || "Unknown";
+
+		if (!leadStatusCounts[status]) {
+			leadStatusCounts[status] = 0;
+		}
+
+		leadStatusCounts[status] += 1;
+	});
+
 	return {
 		totalLeads,
 		newLeads,
 		wonLeads,
 		lostLeads,
 		conversionRate,
+		leadStatusCounts,
 	};
 }
 

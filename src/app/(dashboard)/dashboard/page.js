@@ -1,7 +1,8 @@
-import { useAuth } from "@/providers/AuthProvider/AuthProvider";
+"use client";
 
-import ManagerDashboard from "@/features/dashboard/ManagerDashboard";
-import AgentDashboard from "@/features/dashboard/AgentDashboard";
+import { useAuth } from "@/providers/AuthProvider/AuthProvider";
+import ManagerDashboard from "@/features/dashboard/ManagerDashboard/ManagerDashboard";
+import AgentDashboard from "@/features/dashboard/AgentDashboard/AgentDashboard";
 
 export default function DashboardPage() {
 	const { role } = useAuth();
