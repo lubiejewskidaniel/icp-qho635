@@ -5,6 +5,7 @@ import { LEAD_STATUS_OPTIONS } from "@/constants/leadStatuses";
 import { MANUAL_ACTIVITY_OPTIONS } from "@/constants/activityTypes";
 import { useAuth } from "@/providers/AuthProvider/AuthProvider";
 import { getAgents } from "@/services/users/userService";
+import { EMAIL_TEMPLATES } from "@/constants/emailTemplates";
 
 import {
 	getLeadById,
@@ -35,6 +36,7 @@ export default function LeadDetails({ leadId }) {
 	const [emailSending, setEmailSending] = useState(false);
 	const [emailError, setEmailError] = useState("");
 	const [emailSuccess, setEmailSuccess] = useState("");
+	const [selectedEmailTemplate, setSelectedEmailTemplate] = useState("");
 
 	const [loading, setLoading] = useState(true);
 	const [saving, setSaving] = useState(false);
@@ -215,6 +217,29 @@ export default function LeadDetails({ leadId }) {
 		}
 	};
 
+	const handleEmailTemplateChange = (e) => {
+		const templateId = e.target.value;
+
+		setSelectedEmailTemplate(templateId);
+		setEmailError("");
+		setEmailSuccess("");
+
+		if (!templateId) {
+			setEmailSubject("");
+			setEmailMessage("");
+			return;
+		}
+
+		const selectedTemplate = EMAIL_TEMPLATES.find(
+			(template) => template.id === templateId,
+		);
+
+		if (!selectedTemplate) return;
+
+		setEmailSubject(selectedTemplate.subject);
+		setEmailMessage(selectedTemplate.message);
+	};
+
 	const handleSendEmail = async () => {
 		if (!lead.email) {
 			setEmailError("This lead does not have an email address.");
@@ -258,6 +283,7 @@ export default function LeadDetails({ leadId }) {
 
 			setEmailSubject("");
 			setEmailMessage("");
+			setSelectedEmailTemplate("");
 			setEmailSuccess("Email sent successfully.");
 		} catch (err) {
 			console.error("Could not send email:", err);
@@ -380,6 +406,20 @@ export default function LeadDetails({ leadId }) {
 					</button>
 
 					<h3 className={styles.sectionTitle}>Send Email</h3>
+
+					<label>Email template</label>
+					<select
+						value={selectedEmailTemplate}
+						onChange={handleEmailTemplateChange}
+						disabled={emailSending}
+					>
+						<option value="">Custom email</option>
+						{EMAIL_TEMPLATES.map((template) => (
+							<option key={template.id} value={template.id}>
+								{template.label}
+							</option>
+						))}
+					</select>
 
 					<label>Email subject</label>
 					<input
