@@ -1,11 +1,11 @@
 export const ACTIVITY_TYPES = {
-	NOTE: "note",
-	CALL: "call",
-	EMAIL: "email",
-	MEETING: "meeting",
-	STATUS_CHANGE: "status_change",
-	FOLLOW_UP: "follow_up",
-	ASSIGNMENT: "assignment",
+	NOTE: "Note",
+	CALL: "Call",
+	EMAIL: "Email",
+	MEETING: "Meeting",
+	STATUS_CHANGE: "Status change",
+	FOLLOW_UP: "Follow Up",
+	ASSIGNMENT: "Assignment",
 };
 
 export const MANUAL_ACTIVITY_OPTIONS = [

@@ -68,9 +68,9 @@ export async function getAssignedLeads(agentId) {
 
 	const snapshot = await getDocs(q);
 
-	return snapshot.docs.map((doc) => ({
-		id: doc.id,
-		...doc.data(),
+	return snapshot.docs.map((document) => ({
+		id: document.id,
+		...document.data(),
 	}));
 }
 
@@ -79,17 +79,12 @@ export async function getAllLeads() {
 
 	const snapshot = await getDocs(q);
 
-	return snapshot.docs.map((doc) => ({
-		id: doc.id,
-		...doc.data(),
+	return snapshot.docs.map((document) => ({
+		id: document.id,
+		...document.data(),
 	}));
 }
 
-/*
--fetching a single lead
--changing the lead status
--setting a follow-up date
-*/
 export async function getLeadById(leadId) {
 	const leadRef = doc(db, "leads", leadId);
 	const snapshot = await getDoc(leadRef);
@@ -115,7 +110,7 @@ export async function updateLeadStatus(leadId, status, meta = {}) {
 
 	await addLeadActivity({
 		leadId,
-		type: "status_change",
+		type: "Status Change",
 		description: `Status changed to ${status}`,
 		createdBy: meta.createdBy,
 		createdByName: meta.createdByName,
@@ -137,14 +132,13 @@ export async function updateLeadFollowUpDate(
 
 	await addLeadActivity({
 		leadId,
-		type: "follow_up",
+		type: "Follow Up",
 		description: `Next follow-up date set to ${nextFollowUpDate}`,
 		createdBy: meta.createdBy,
 		createdByName: meta.createdByName,
 	});
 }
 
-// aasigne lead to agent
 export async function assignLeadToAgent(leadId, agent, meta = {}) {
 	const leadRef = doc(db, "leads", leadId);
 
@@ -157,7 +151,7 @@ export async function assignLeadToAgent(leadId, agent, meta = {}) {
 
 	await addLeadActivity({
 		leadId,
-		type: "assignment",
+		type: "Assignment",
 		description: `Lead assigned to ${agent.name}`,
 		createdBy: meta.createdBy,
 		createdByName: meta.createdByName,
@@ -165,7 +159,7 @@ export async function assignLeadToAgent(leadId, agent, meta = {}) {
 }
 
 export async function addLeadActivity(data) {
-	const docRef = await addDoc(collection(db, "activities"), {
+	const activityRef = await addDoc(collection(db, "activities"), {
 		leadId: data.leadId,
 		type: data.type,
 		description: data.description,
@@ -174,7 +168,14 @@ export async function addLeadActivity(data) {
 		createdAt: serverTimestamp(),
 	});
 
-	return docRef.id;
+	const leadRef = doc(db, "leads", data.leadId);
+
+	await updateDoc(leadRef, {
+		lastActivityAt: serverTimestamp(),
+		updatedAt: serverTimestamp(),
+	});
+
+	return activityRef.id;
 }
 
 export async function getLeadActivities(leadId, lastVisible = null) {
@@ -193,9 +194,9 @@ export async function getLeadActivities(leadId, lastVisible = null) {
 	const snapshot = await getDocs(q);
 
 	return {
-		activities: snapshot.docs.map((doc) => ({
-			id: doc.id,
-			...doc.data(),
+		activities: snapshot.docs.map((document) => ({
+			id: document.id,
+			...document.data(),
 		})),
 		lastVisible: snapshot.docs[snapshot.docs.length - 1] || null,
 		hasMore: snapshot.docs.length === 5,
