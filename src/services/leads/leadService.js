@@ -6,6 +6,9 @@ import {
 	where,
 	orderBy,
 	serverTimestamp,
+	doc,
+	getDoc,
+	updateDoc,
 } from "firebase/firestore";
 
 import { db } from "@/lib/firebase/config";
@@ -78,4 +81,42 @@ export async function getAllLeads() {
 		id: doc.id,
 		...doc.data(),
 	}));
+}
+
+/*
+-fetching a single lead
+-changing the lead status
+-setting a follow-up date
+*/
+export async function getLeadById(leadId) {
+	const leadRef = doc(db, "leads", leadId);
+	const snapshot = await getDoc(leadRef);
+
+	if (!snapshot.exists()) {
+		return null;
+	}
+
+	return {
+		id: snapshot.id,
+		...snapshot.data(),
+	};
+}
+
+export async function updateLeadStatus(leadId, status) {
+	const leadRef = doc(db, "leads", leadId);
+
+	await updateDoc(leadRef, {
+		status,
+		updatedAt: serverTimestamp(),
+		lastActivityAt: serverTimestamp(),
+	});
+}
+
+export async function updateLeadFollowUpDate(leadId, nextFollowUpDate) {
+	const leadRef = doc(db, "leads", leadId);
+
+	await updateDoc(leadRef, {
+		nextFollowUpDate,
+		updatedAt: serverTimestamp(),
+	});
 }
