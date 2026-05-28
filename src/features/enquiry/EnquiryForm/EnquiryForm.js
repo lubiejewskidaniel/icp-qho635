@@ -3,7 +3,7 @@
 import { useState } from "react";
 import styles from "./EnquiryForm.module.css";
 import Link from "next/link";
-import { createLead } from "@/services/lead/leadService";
+import { createLead } from "@/services/leads/leadService";
 
 export default function EnquiryForm() {
 	const [formData, setFormData] = useState({
@@ -219,10 +219,7 @@ export default function EnquiryForm() {
 
 								<span>
 									I agree to the{" "}
-									<Link
-										href="/privacy-policy"
-										className={styles.privacyLink}
-									>
+									<Link href="/privacy-policy" className={styles.privacyLink}>
 										Privacy Policy
 									</Link>
 									.
