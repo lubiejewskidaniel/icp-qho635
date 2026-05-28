@@ -1,0 +1,153 @@
+.wrapper {
+	display: flex;
+	flex-direction: column;
+	gap: 24px;
+}
+
+.header {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	background: white;
+	padding: 24px;
+	border-radius: 14px;
+	border: 1px solid #e2e8f0;
+	box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
+}
+
+.header h1 {
+	font-size: 28px;
+	margin-bottom: 6px;
+	color: #0f172a;
+}
+
+.header p {
+	color: #64748b;
+}
+
+.status {
+	background: #dbeafe;
+	color: #1d4ed8;
+	padding: 6px 12px;
+	border-radius: 999px;
+	font-size: 13px;
+	font-weight: 600;
+}
+
+.grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+	gap: 16px;
+}
+
+.card {
+	background: white;
+	padding: 20px;
+	border-radius: 14px;
+	border: 1px solid #e2e8f0;
+	box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
+}
+
+.card h2 {
+	font-size: 18px;
+	margin-bottom: 16px;
+	color: #0f172a;
+}
+
+.card p {
+	font-size: 14px;
+	color: #475569;
+	margin-bottom: 10px;
+	line-height: 1.5;
+}
+
+.card label {
+	display: block;
+	font-size: 14px;
+	margin-bottom: 6px;
+	color: #334155;
+	font-weight: 500;
+}
+
+.card select,
+.card input,
+.card textarea {
+	width: 100%;
+	padding: 10px 12px;
+	border-radius: 8px;
+	border: 1px solid #cbd5e1;
+	margin-bottom: 16px;
+	font-size: 14px;
+}
+
+.card textarea {
+	min-height: 100px;
+	resize: vertical;
+}
+
+.card select:focus,
+.card input:focus,
+.card textarea:focus {
+	outline: none;
+	border-color: #2563eb;
+}
+
+.noteButton {
+	width: 100%;
+	padding: 12px;
+	border: none;
+	border-radius: 8px;
+	background: #2563eb;
+	color: white;
+	cursor: pointer;
+	font-weight: 600;
+}
+
+.noteButton:disabled {
+	opacity: 0.6;
+	cursor: not-allowed;
+}
+
+.historyCard {
+	background: white;
+	padding: 24px;
+	border-radius: 14px;
+	border: 1px solid #e2e8f0;
+	box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
+}
+
+.historyCard h2 {
+	margin-bottom: 20px;
+	color: #0f172a;
+}
+
+.historyList {
+	display: flex;
+	flex-direction: column;
+	gap: 16px;
+}
+
+.historyItem {
+	padding-bottom: 16px;
+	border-bottom: 1px solid #e2e8f0;
+}
+
+.historyHeader {
+	margin-bottom: 8px;
+	color: #1e293b;
+}
+
+.loadMoreButton {
+	margin-top: 16px;
+	padding: 10px 16px;
+	border: none;
+	border-radius: 8px;
+	background: #1e293b;
+	color: white;
+	cursor: pointer;
+	font-weight: 600;
+}
+
+.loadMoreButton:hover {
+	background: #0f172a;
+}

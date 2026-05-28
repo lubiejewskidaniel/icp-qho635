@@ -9,6 +9,8 @@ import {
 	doc,
 	getDoc,
 	updateDoc,
+	limit,
+	startAfter,
 } from "firebase/firestore";
 
 import { db } from "@/lib/firebase/config";
@@ -102,7 +104,7 @@ export async function getLeadById(leadId) {
 	};
 }
 
-export async function updateLeadStatus(leadId, status) {
+export async function updateLeadStatus(leadId, status, meta = {}) {
 	const leadRef = doc(db, "leads", leadId);
 
 	await updateDoc(leadRef, {
@@ -110,13 +112,92 @@ export async function updateLeadStatus(leadId, status) {
 		updatedAt: serverTimestamp(),
 		lastActivityAt: serverTimestamp(),
 	});
+
+	await addLeadActivity({
+		leadId,
+		type: "status_change",
+		description: `Status changed to ${status}`,
+		createdBy: meta.createdBy,
+		createdByName: meta.createdByName,
+	});
 }
 
-export async function updateLeadFollowUpDate(leadId, nextFollowUpDate) {
+export async function updateLeadFollowUpDate(
+	leadId,
+	nextFollowUpDate,
+	meta = {},
+) {
 	const leadRef = doc(db, "leads", leadId);
 
 	await updateDoc(leadRef, {
 		nextFollowUpDate,
 		updatedAt: serverTimestamp(),
+		lastActivityAt: serverTimestamp(),
 	});
+
+	await addLeadActivity({
+		leadId,
+		type: "follow_up",
+		description: `Next follow-up date set to ${nextFollowUpDate}`,
+		createdBy: meta.createdBy,
+		createdByName: meta.createdByName,
+	});
+}
+
+// aasigne lead to agent
+export async function assignLeadToAgent(leadId, agent, meta = {}) {
+	const leadRef = doc(db, "leads", leadId);
+
+	await updateDoc(leadRef, {
+		assignedAgentId: agent.id,
+		assignedAgentName: agent.name,
+		updatedAt: serverTimestamp(),
+		lastActivityAt: serverTimestamp(),
+	});
+
+	await addLeadActivity({
+		leadId,
+		type: "assignment",
+		description: `Lead assigned to ${agent.name}`,
+		createdBy: meta.createdBy,
+		createdByName: meta.createdByName,
+	});
+}
+
+export async function addLeadActivity(data) {
+	const docRef = await addDoc(collection(db, "activities"), {
+		leadId: data.leadId,
+		type: data.type,
+		description: data.description,
+		createdBy: data.createdBy || null,
+		createdByName: data.createdByName || null,
+		createdAt: serverTimestamp(),
+	});
+
+	return docRef.id;
+}
+
+export async function getLeadActivities(leadId, lastVisible = null) {
+	const queryConstraints = [
+		where("leadId", "==", leadId),
+		orderBy("createdAt", "desc"),
+		limit(5),
+	];
+
+	if (lastVisible) {
+		queryConstraints.push(startAfter(lastVisible));
+	}
+
+	const q = query(collection(db, "activities"), ...queryConstraints);
+
+	const snapshot = await getDocs(q);
+
+	return {
+		activities: snapshot.docs.map((doc) => ({
+			id: doc.id,
+			...doc.data(),
+		})),
+		lastVisible: snapshot.docs[snapshot.docs.length - 1] || null,
+		hasMore: snapshot.docs.length === 5,
+	};
 }
