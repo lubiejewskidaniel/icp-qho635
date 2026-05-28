@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { LEAD_STATUS_OPTIONS } from "@/constants/leadStatuses";
+import { MANUAL_ACTIVITY_OPTIONS } from "@/constants/activityTypes";
 import { useAuth } from "@/providers/AuthProvider/AuthProvider";
 import { getAgents } from "@/services/users/userService";
 
@@ -25,6 +26,8 @@ export default function LeadDetails({ leadId }) {
 	const [lastVisibleActivity, setLastVisibleActivity] = useState(null);
 	const [hasMoreActivities, setHasMoreActivities] = useState(false);
 	const [note, setNote] = useState("");
+	const [activityType, setActivityType] = useState("call");
+	const [activityDescription, setActivityDescription] = useState("");
 	const [loading, setLoading] = useState(true);
 	const [saving, setSaving] = useState(false);
 	const [error, setError] = useState("");
@@ -43,7 +46,6 @@ export default function LeadDetails({ leadId }) {
 
 			try {
 				const activityData = await getLeadActivities(leadId);
-
 				setActivities(activityData.activities);
 				setLastVisibleActivity(activityData.lastVisible);
 				setHasMoreActivities(activityData.hasMore);
@@ -66,6 +68,22 @@ export default function LeadDetails({ leadId }) {
 		loadAgents();
 	}, [role]);
 
+	const activityMeta = {
+		createdBy: user?.uid || null,
+		createdByName: name || null,
+	};
+
+	const refreshActivities = async () => {
+		try {
+			const activityData = await getLeadActivities(leadId);
+			setActivities(activityData.activities);
+			setLastVisibleActivity(activityData.lastVisible);
+			setHasMoreActivities(activityData.hasMore);
+		} catch (err) {
+			console.error("Could not refresh activities:", err);
+		}
+	};
+
 	const handleLoadMoreActivities = async () => {
 		if (!lastVisibleActivity) return;
 
@@ -84,22 +102,6 @@ export default function LeadDetails({ leadId }) {
 		}
 	};
 
-	const activityMeta = {
-		createdBy: user?.uid || null,
-		createdByName: name || null,
-	};
-
-	const refreshActivities = async () => {
-		try {
-			const activityData = await getLeadActivities(leadId);
-
-			setActivities(activityData.activities);
-			setLastVisibleActivity(activityData.lastVisible);
-			setHasMoreActivities(activityData.hasMore);
-		} catch (err) {
-			console.error("Could not refresh activities:", err);
-		}
-	};
 	const handleStatusChange = async (e) => {
 		const newStatus = e.target.value;
 
@@ -179,6 +181,27 @@ export default function LeadDetails({ leadId }) {
 
 			await refreshActivities();
 			setNote("");
+		} finally {
+			setSaving(false);
+		}
+	};
+
+	const handleAddActivity = async () => {
+		if (!activityDescription.trim()) return;
+
+		setSaving(true);
+
+		try {
+			await addLeadActivity({
+				leadId,
+				type: activityType,
+				description: activityDescription.trim(),
+				...activityMeta,
+			});
+
+			await refreshActivities();
+			setActivityDescription("");
+			setActivityType("call");
 		} finally {
 			setSaving(false);
 		}
@@ -296,6 +319,39 @@ export default function LeadDetails({ leadId }) {
 						Add Note
 					</button>
 
+					<h3 className={styles.sectionTitle}>Communication Activity</h3>
+
+					<label>Activity type</label>
+					<select
+						value={activityType}
+						onChange={(e) => setActivityType(e.target.value)}
+						disabled={saving}
+					>
+						{MANUAL_ACTIVITY_OPTIONS.map((option) => (
+							<option key={option.value} value={option.value}>
+								{option.label}
+							</option>
+						))}
+					</select>
+
+					<label>Activity description</label>
+					<textarea
+						value={activityDescription}
+						onChange={(e) => setActivityDescription(e.target.value)}
+						placeholder="Describe the call, email or meeting..."
+						rows={4}
+						disabled={saving}
+					/>
+
+					<button
+						type="button"
+						onClick={handleAddActivity}
+						disabled={saving}
+						className={styles.noteButton}
+					>
+						Log Activity
+					</button>
+
 					{saving && <p>Saving...</p>}
 				</div>
 			</div>
@@ -322,6 +378,7 @@ export default function LeadDetails({ leadId }) {
 					</div>
 				)}
 			</div>
+
 			{hasMoreActivities && (
 				<button
 					type="button"

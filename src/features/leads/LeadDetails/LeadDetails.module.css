@@ -151,3 +151,10 @@
 .loadMoreButton:hover {
 	background: #0f172a;
 }
+
+.sectionTitle {
+	margin-top: 28px;
+	margin-bottom: 16px;
+	font-size: 16px;
+	color: #0f172a;
+}
