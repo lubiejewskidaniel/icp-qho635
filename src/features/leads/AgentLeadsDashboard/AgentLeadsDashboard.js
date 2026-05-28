@@ -90,9 +90,17 @@ export default function AgentLeadsDashboard() {
 					</p>
 				</div>
 
-				<Link href="/dashboard/leads/new" className={styles.addButton}>
-					Add Lead
-				</Link>
+				<div className={styles.headerActions}>
+					<Link href="/dashboard/leads/new" className={styles.addButton}>
+						Add Lead
+					</Link>
+
+					{role === "manager" && (
+						<Link href="/dashboard/leads/import" className={styles.addButton}>
+							Import CSV
+						</Link>
+					)}
+				</div>
 			</div>
 
 			<div className={styles.filters}>

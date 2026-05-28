@@ -11,6 +11,7 @@ import {
 	updateDoc,
 	limit,
 	startAfter,
+	writeBatch,
 } from "firebase/firestore";
 
 import { db } from "@/lib/firebase/config";
@@ -200,5 +201,87 @@ export async function getLeadActivities(leadId, lastVisible = null) {
 		})),
 		lastVisible: snapshot.docs[snapshot.docs.length - 1] || null,
 		hasMore: snapshot.docs.length === 5,
+	};
+}
+
+export async function leadExists(email, phone) {
+	const emailQuery = query(
+		collection(db, "leads"),
+		where("email", "==", email),
+	);
+
+	const phoneQuery = query(
+		collection(db, "leads"),
+		where("phone", "==", phone),
+	);
+
+	const emailSnapshot = await getDocs(emailQuery);
+	const phoneSnapshot = await getDocs(phoneQuery);
+
+	return !emailSnapshot.empty || !phoneSnapshot.empty;
+}
+
+export async function importCsvLeads(rows, meta = {}) {
+	const batch = writeBatch(db);
+
+	let imported = 0;
+	let skipped = 0;
+
+	for (const row of rows) {
+		const email = row.email?.trim();
+		const phone = row.phone?.trim();
+
+		if (!email && !phone) {
+			skipped++;
+			continue;
+		}
+
+		const exists = await leadExists(email, phone);
+
+		if (exists) {
+			skipped++;
+			continue;
+		}
+
+		const leadRef = doc(collection(db, "leads"));
+
+		batch.set(leadRef, {
+			fullName: row.fullName || "",
+			email: email || "",
+			phone: phone || "",
+			country: row.country || "",
+			city: row.city || "",
+
+			propertyType: row.propertyType || "",
+			location: row.location || "",
+			budgetRange: row.budgetRange || "",
+			purpose: row.purpose || "",
+			preferredContactMethod: row.preferredContactMethod || "",
+
+			source: "csv",
+
+			assignedAgentId: row.assignedAgentId || meta.createdBy || null,
+			assignedAgentName: row.assignedAgentName || meta.createdByName || null,
+
+			createdBy: meta.createdBy || null,
+
+			status: LEAD_STATUSES.NEW,
+
+			lastContactDate: null,
+			lastActivityAt: serverTimestamp(),
+			nextFollowUpDate: null,
+
+			createdAt: serverTimestamp(),
+			updatedAt: serverTimestamp(),
+		});
+
+		imported++;
+	}
+
+	await batch.commit();
+
+	return {
+		imported,
+		skipped,
 	};
 }

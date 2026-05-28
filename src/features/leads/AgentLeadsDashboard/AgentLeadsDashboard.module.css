@@ -96,3 +96,9 @@
 	color: #475569;
 	margin-bottom: 6px;
 }
+
+.headerActions {
+	display: flex;
+	gap: 20px;
+	align-items: center;
+}
