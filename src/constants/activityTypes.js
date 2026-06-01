@@ -6,6 +6,7 @@ export const ACTIVITY_TYPES = {
 	STATUS_CHANGE: "Status change",
 	FOLLOW_UP: "Follow Up",
 	ASSIGNMENT: "Assignment",
+	OTHER: "Other",
 };
 
 export const MANUAL_ACTIVITY_OPTIONS = [
@@ -20,5 +21,9 @@ export const MANUAL_ACTIVITY_OPTIONS = [
 	{
 		value: ACTIVITY_TYPES.MEETING,
 		label: "Meeting",
+	},
+	{
+		value: ACTIVITY_TYPES.OTHER,
+		label: "Other",
 	},
 ];

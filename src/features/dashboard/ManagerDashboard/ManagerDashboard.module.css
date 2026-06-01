@@ -1,0 +1,169 @@
+.wrapper {
+	display: flex;
+	flex-direction: column;
+	gap: 24px;
+}
+
+.header h1 {
+	margin: 0;
+	font-size: 28px;
+	color: #0f172a;
+}
+
+.header p {
+	margin: 6px 0 0;
+	color: #64748b;
+}
+
+.statsGrid {
+	display: grid;
+	grid-template-columns: repeat(4, minmax(0, 1fr));
+	gap: 16px;
+}
+
+@media (max-width: 1024px) {
+	.statsGrid {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+	}
+}
+
+@media (max-width: 640px) {
+	.statsGrid {
+		grid-template-columns: 1fr;
+	}
+}
+
+.pipelineCard {
+	background: #ffffff;
+	border: 1px solid #e5e7eb;
+	border-radius: 20px;
+	padding: 24px;
+	box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
+}
+
+.pipelineHeader {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	margin-bottom: 24px;
+}
+
+.pipelineHeader h2 {
+	margin: 0;
+	font-size: 22px;
+	color: #0f172a;
+}
+
+.pipelineHeader p {
+	margin: 6px 0 0;
+	color: #64748b;
+	font-size: 14px;
+}
+
+.pipelineList {
+	display: flex;
+	flex-direction: column;
+	gap: 12px;
+}
+
+.pipelineItem {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	padding: 14px 16px;
+	border: 1px solid #e5e7eb;
+	border-radius: 14px;
+	background: #f8fafc;
+}
+
+.pipelineItem span {
+	font-weight: 500;
+	color: #334155;
+}
+
+.pipelineItem strong {
+	font-size: 18px;
+	color: #0f172a;
+}
+
+.dashboardGrid {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: 24px;
+	align-items: start;
+}
+
+.activityCard {
+	background: #ffffff;
+	border: 1px solid #e5e7eb;
+	border-radius: 20px;
+	padding: 24px;
+	box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
+}
+
+.activityHeader {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	margin-bottom: 24px;
+}
+
+.activityHeader h2 {
+	margin: 0;
+	font-size: 22px;
+	color: #0f172a;
+}
+
+.activityHeader p {
+	margin: 6px 0 0;
+	color: #64748b;
+	font-size: 14px;
+}
+
+.activityList {
+	display: flex;
+	flex-direction: column;
+	gap: 12px;
+}
+
+.activityItem {
+	padding: 16px;
+	border: 1px solid #e5e7eb;
+	border-radius: 14px;
+	background: #f8fafc;
+}
+
+.activityTopRow {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	margin-bottom: 8px;
+}
+
+.activityTopRow strong {
+	color: #0f172a;
+	font-size: 15px;
+}
+
+.activityTopRow span {
+	font-size: 13px;
+	color: #64748b;
+}
+
+.activityItem p {
+	margin: 0;
+	font-size: 14px;
+	color: #334155;
+	line-height: 1.5;
+}
+
+.emptyState {
+	color: #64748b;
+	font-size: 14px;
+}
+
+@media (max-width: 1024px) {
+	.dashboardGrid {
+		grid-template-columns: 1fr;
+	}
+}

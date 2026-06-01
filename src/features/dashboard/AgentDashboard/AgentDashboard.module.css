@@ -1,0 +1,34 @@
+.wrapper {
+	display: flex;
+	flex-direction: column;
+	gap: 24px;
+}
+
+.header h1 {
+	margin: 0;
+	font-size: 28px;
+	color: #0f172a;
+}
+
+.header p {
+	margin: 6px 0 0;
+	color: #64748b;
+}
+
+.statsGrid {
+	display: grid;
+	grid-template-columns: repeat(4, minmax(0, 1fr));
+	gap: 16px;
+}
+
+@media (max-width: 1024px) {
+	.statsGrid {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+	}
+}
+
+@media (max-width: 640px) {
+	.statsGrid {
+		grid-template-columns: 1fr;
+	}
+}

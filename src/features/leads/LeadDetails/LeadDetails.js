@@ -5,6 +5,7 @@ import { LEAD_STATUS_OPTIONS } from "@/constants/leadStatuses";
 import { MANUAL_ACTIVITY_OPTIONS } from "@/constants/activityTypes";
 import { useAuth } from "@/providers/AuthProvider/AuthProvider";
 import { getAgents } from "@/services/users/userService";
+import { EMAIL_TEMPLATES } from "@/constants/emailTemplates";
 
 import {
 	getLeadById,
@@ -25,9 +26,18 @@ export default function LeadDetails({ leadId }) {
 	const [activities, setActivities] = useState([]);
 	const [lastVisibleActivity, setLastVisibleActivity] = useState(null);
 	const [hasMoreActivities, setHasMoreActivities] = useState(false);
+
 	const [note, setNote] = useState("");
 	const [activityType, setActivityType] = useState("call");
 	const [activityDescription, setActivityDescription] = useState("");
+
+	const [emailSubject, setEmailSubject] = useState("");
+	const [emailMessage, setEmailMessage] = useState("");
+	const [emailSending, setEmailSending] = useState(false);
+	const [emailError, setEmailError] = useState("");
+	const [emailSuccess, setEmailSuccess] = useState("");
+	const [selectedEmailTemplate, setSelectedEmailTemplate] = useState("");
+
 	const [loading, setLoading] = useState(true);
 	const [saving, setSaving] = useState(false);
 	const [error, setError] = useState("");
@@ -207,6 +217,82 @@ export default function LeadDetails({ leadId }) {
 		}
 	};
 
+	const handleEmailTemplateChange = (e) => {
+		const templateId = e.target.value;
+
+		setSelectedEmailTemplate(templateId);
+		setEmailError("");
+		setEmailSuccess("");
+
+		if (!templateId) {
+			setEmailSubject("");
+			setEmailMessage("");
+			return;
+		}
+
+		const selectedTemplate = EMAIL_TEMPLATES.find(
+			(template) => template.id === templateId,
+		);
+
+		if (!selectedTemplate) return;
+
+		setEmailSubject(selectedTemplate.subject);
+		setEmailMessage(selectedTemplate.message);
+	};
+
+	const handleSendEmail = async () => {
+		if (!lead.email) {
+			setEmailError("This lead does not have an email address.");
+			return;
+		}
+
+		if (!emailSubject.trim() || !emailMessage.trim()) {
+			setEmailError("Email subject and message are required.");
+			return;
+		}
+
+		setEmailSending(true);
+		setEmailError("");
+		setEmailSuccess("");
+
+		try {
+			const response = await fetch("/api/send-lead-email", {
+				method: "POST",
+				headers: {
+					"Content-Type": "application/json",
+				},
+				body: JSON.stringify({
+					to: lead.email,
+					subject: emailSubject.trim(),
+					message: emailMessage.trim(),
+				}),
+			});
+
+			if (!response.ok) {
+				throw new Error("Email failed");
+			}
+
+			await addLeadActivity({
+				leadId,
+				type: "email",
+				description: `Email sent to ${lead.email}: ${emailSubject.trim()}`,
+				...activityMeta,
+			});
+
+			await refreshActivities();
+
+			setEmailSubject("");
+			setEmailMessage("");
+			setSelectedEmailTemplate("");
+			setEmailSuccess("Email sent successfully.");
+		} catch (err) {
+			console.error("Could not send email:", err);
+			setEmailError("Could not send email.");
+		} finally {
+			setEmailSending(false);
+		}
+	};
+
 	if (loading) return <p>Loading lead...</p>;
 	if (error) return <p>{error}</p>;
 	if (!lead) return <p>Lead not found.</p>;
@@ -318,6 +404,52 @@ export default function LeadDetails({ leadId }) {
 					>
 						Add Note
 					</button>
+
+					<h3 className={styles.sectionTitle}>Send Email</h3>
+
+					<label>Email template</label>
+					<select
+						value={selectedEmailTemplate}
+						onChange={handleEmailTemplateChange}
+						disabled={emailSending}
+					>
+						<option value="">Custom email</option>
+						{EMAIL_TEMPLATES.map((template) => (
+							<option key={template.id} value={template.id}>
+								{template.label}
+							</option>
+						))}
+					</select>
+
+					<label>Email subject</label>
+					<input
+						type="text"
+						value={emailSubject}
+						onChange={(e) => setEmailSubject(e.target.value)}
+						placeholder="Email subject..."
+						disabled={emailSending}
+					/>
+
+					<label>Email message</label>
+					<textarea
+						value={emailMessage}
+						onChange={(e) => setEmailMessage(e.target.value)}
+						placeholder="Write your email message..."
+						rows={6}
+						disabled={emailSending}
+					/>
+
+					<button
+						type="button"
+						onClick={handleSendEmail}
+						disabled={emailSending || !lead.email}
+						className={styles.noteButton}
+					>
+						{emailSending ? "Sending..." : "Send Email"}
+					</button>
+
+					{emailError && <p>{emailError}</p>}
+					{emailSuccess && <p>{emailSuccess}</p>}
 
 					<h3 className={styles.sectionTitle}>Communication Activity</h3>
 
