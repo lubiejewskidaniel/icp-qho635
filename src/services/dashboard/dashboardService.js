@@ -16,6 +16,7 @@ export async function getManagerDashboardStats() {
 	const conversionRate =
 		totalLeads > 0 ? Math.round((wonLeads / totalLeads) * 100) : 0;
 
+	// Count leads by status for pipeline overview
 	const leadStatusCounts = {};
 
 	leads.forEach((lead) => {
@@ -28,6 +29,27 @@ export async function getManagerDashboardStats() {
 		leadStatusCounts[status] += 1;
 	});
 
+	// Count how many leads each agent currently has
+	const leadsPerAgent = {};
+
+	leads.forEach((lead) => {
+		const agentName = lead.assignedAgentName || "Unassigned";
+
+		if (!leadsPerAgent[agentName]) {
+			leadsPerAgent[agentName] = 0;
+		}
+
+		leadsPerAgent[agentName] += 1;
+	});
+
+	// Convert object into array for easier rendering in UI
+	const agentPerformance = Object.entries(leadsPerAgent)
+		.map(([agentName, count]) => ({
+			agentName,
+			count,
+		}))
+		.sort((a, b) => b.count - a.count);
+
 	return {
 		totalLeads,
 		newLeads,
@@ -36,6 +58,7 @@ export async function getManagerDashboardStats() {
 		conversionRate,
 		leadStatusCounts,
 		recentActivities,
+		agentPerformance,
 	};
 }
 
