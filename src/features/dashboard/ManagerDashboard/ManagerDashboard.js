@@ -59,6 +59,20 @@ export default function ManagerDashboard() {
 					value={`${stats.conversionRate}%`}
 					subtitle="Won leads compared to all leads"
 				/>
+
+				{/* Leads that require contact today */}
+				<DashboardStatCard
+					title="Today's Follow-Ups"
+					value={stats.todayFollowUps}
+					subtitle="Leads scheduled for follow-up today"
+				/>
+
+				{/* Follow-ups that have already passed their due date */}
+				<DashboardStatCard
+					title="Overdue Follow-Ups"
+					value={stats.overdueFollowUps}
+					subtitle="Leads requiring immediate attention"
+				/>
 			</div>
 
 			<div className={styles.dashboardGrid}>
