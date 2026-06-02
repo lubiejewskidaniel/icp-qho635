@@ -300,3 +300,13 @@ export async function getRecentActivities(limitCount = 5) {
 		...document.data(),
 	}));
 }
+
+// Stores the date of the most recent contact with the lead
+export async function updateLeadLastContactDate(leadId) {
+	const leadRef = doc(db, "leads", leadId);
+
+	await updateDoc(leadRef, {
+		lastContactDate: serverTimestamp(),
+		updatedAt: serverTimestamp(),
+	});
+}

@@ -14,6 +14,7 @@ import {
 	assignLeadToAgent,
 	addLeadActivity,
 	getLeadActivities,
+	updateLeadLastContactDate,
 } from "@/services/leads/leadService";
 
 import styles from "./LeadDetails.module.css";
@@ -305,6 +306,9 @@ export default function LeadDetails({ leadId }) {
 				throw new Error("Email failed");
 			}
 
+			// Update last contact date after successful email delivery
+			await updateLeadLastContactDate(leadId);
+
 			await addLeadActivity({
 				leadId,
 				type: "email",
@@ -349,6 +353,13 @@ export default function LeadDetails({ leadId }) {
 					</p>
 					<p>
 						<strong>Phone:</strong> {lead.phone || "-"}
+					</p>
+
+					<p>
+						<strong>Last Contact:</strong>{" "}
+						{lead.lastContactDate?.seconds
+							? new Date(lead.lastContactDate.seconds * 1000).toLocaleString()
+							: "-"}
 					</p>
 					<p>
 						<strong>Country:</strong> {lead.country || "-"}
