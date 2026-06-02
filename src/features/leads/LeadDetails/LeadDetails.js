@@ -6,6 +6,7 @@ import { MANUAL_ACTIVITY_OPTIONS } from "@/constants/activityTypes";
 import { useAuth } from "@/providers/AuthProvider/AuthProvider";
 import { getAgents } from "@/services/users/userService";
 import { EMAIL_TEMPLATES } from "@/constants/emailTemplates";
+import { STATUS_NOTIFICATION_TEMPLATES } from "@/constants/statusNotificationTemplates";
 
 import {
 	getLeadById,
@@ -115,6 +116,7 @@ export default function LeadDetails({ leadId }) {
 
 	const handleStatusChange = async (e) => {
 		const newStatus = e.target.value;
+		const statusNotificationTemplate = STATUS_NOTIFICATION_TEMPLATES[newStatus];
 
 		setSaving(true);
 
@@ -125,6 +127,36 @@ export default function LeadDetails({ leadId }) {
 				...currentLead,
 				status: newStatus,
 			}));
+
+			// Send automatic customer email only for selected public-facing statuses
+			if (lead.email && statusNotificationTemplate) {
+				try {
+					const response = await fetch("/api/send-lead-email", {
+						method: "POST",
+						headers: {
+							"Content-Type": "application/json",
+						},
+						body: JSON.stringify({
+							to: lead.email,
+							subject: statusNotificationTemplate.subject,
+							message: statusNotificationTemplate.message,
+						}),
+					});
+
+					if (!response.ok) {
+						throw new Error("Status notification email failed");
+					}
+
+					await addLeadActivity({
+						leadId,
+						type: "email",
+						description: `Status notification email sent to ${lead.email}: ${statusNotificationTemplate.subject}`,
+						...activityMeta,
+					});
+				} catch (emailError) {
+					console.error("Could not send status notification:", emailError);
+				}
+			}
 
 			await refreshActivities();
 		} finally {
