@@ -10,10 +10,15 @@ export default function ManagerDashboard() {
 	const [stats, setStats] = useState(null);
 	const [loading, setLoading] = useState(true);
 
+	// Controls the reporting period for dashboard statistics
+	const [dateRange, setDateRange] = useState("all");
+
 	useEffect(() => {
 		async function loadStats() {
+			setLoading(true);
+
 			try {
-				const data = await getManagerDashboardStats();
+				const data = await getManagerDashboardStats(dateRange);
 				setStats(data);
 			} catch (error) {
 				console.error("Could not load manager dashboard stats:", error);
@@ -23,7 +28,7 @@ export default function ManagerDashboard() {
 		}
 
 		loadStats();
-	}, []);
+	}, [dateRange]);
 
 	if (loading) return <p>Loading dashboard...</p>;
 	if (!stats) return <p>Could not load dashboard.</p>;
@@ -31,15 +36,31 @@ export default function ManagerDashboard() {
 	return (
 		<section className={styles.wrapper}>
 			<div className={styles.header}>
-				<h1>Manager Overview</h1>
-				<p>Track your lead pipeline and sales performance.</p>
+				<div>
+					<h1>Manager Overview</h1>
+					<p>Track your lead pipeline and sales performance.</p>
+				</div>
+
+				<div className={styles.filters}>
+					<label>Lead Activity Period</label>
+
+					<select
+						value={dateRange}
+						onChange={(e) => setDateRange(e.target.value)}
+					>
+						<option value="all">All Time</option>
+						<option value="3">Last 3 Days</option>
+						<option value="7">Last 7 Days</option>
+						<option value="30">Last 30 Days</option>
+					</select>
+				</div>
 			</div>
 
 			<div className={styles.statsGrid}>
 				<DashboardStatCard
 					title="Total Leads"
 					value={stats.totalLeads}
-					subtitle="All leads in the system"
+					subtitle="Leads active during selected period"
 				/>
 
 				<DashboardStatCard
@@ -57,7 +78,7 @@ export default function ManagerDashboard() {
 				<DashboardStatCard
 					title="Conversion Rate"
 					value={`${stats.conversionRate}%`}
-					subtitle="Won leads compared to all leads"
+					subtitle="Won leads compared to selected leads"
 				/>
 
 				{/* Leads that require contact today */}

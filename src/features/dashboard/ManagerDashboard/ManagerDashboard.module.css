@@ -4,6 +4,13 @@
 	gap: 24px;
 }
 
+.header {
+	display: flex;
+	justify-content: space-between;
+	align-items: flex-start;
+	gap: 24px;
+}
+
 .header h1 {
 	margin: 0;
 	font-size: 28px;
@@ -219,4 +226,43 @@
 .agentPerformanceItem strong {
 	font-size: 16px;
 	color: #0f172a;
+}
+
+.filters {
+	display: flex;
+	flex-direction: column;
+	gap: 6px;
+	align-items: flex-start;
+}
+
+.filters label {
+	font-size: 13px;
+	font-weight: 600;
+	color: #475569;
+}
+
+.filters select {
+	min-width: 180px;
+	padding: 10px 12px;
+	border: 1px solid #cbd5e1;
+	border-radius: 12px;
+	background: #ffffff;
+	color: #0f172a;
+	font-size: 14px;
+}
+
+@media (max-width: 640px) {
+	.header {
+		display: flex;
+		flex-direction: column;
+		gap: 16px;
+	}
+
+	.filters {
+		width: 100%;
+	}
+
+	.filters select {
+		width: 100%;
+	}
 }

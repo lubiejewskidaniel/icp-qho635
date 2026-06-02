@@ -4,9 +4,43 @@ import {
 	getRecentActivities,
 } from "@/services/leads/leadService";
 
-export async function getManagerDashboardStats() {
-	const leads = await getAllLeads();
+function getDateRangeStart(dateRange) {
+	if (dateRange === "all") return null;
+
+	const days = Number(dateRange);
+
+	if (!days) return null;
+
+	const startDate = new Date();
+	startDate.setDate(startDate.getDate() - days);
+	startDate.setHours(0, 0, 0, 0);
+
+	return startDate;
+}
+
+function isLeadInsideDateRange(lead, dateRangeStart) {
+	if (!dateRangeStart) return true;
+
+	// Use last activity first, because dashboard should show recently active leads
+	const timestamp = lead.lastActivityAt;
+
+	if (!timestamp?.seconds) return false;
+
+	const leadDate = new Date(timestamp.seconds * 1000);
+
+	return leadDate >= dateRangeStart;
+}
+
+export async function getManagerDashboardStats(dateRange = "all") {
+	const allLeads = await getAllLeads();
 	const recentActivities = await getRecentActivities(5);
+
+	const dateRangeStart = getDateRangeStart(dateRange);
+
+	// Only keep leads created inside selected reporting period
+	const leads = allLeads.filter((lead) =>
+		isLeadInsideDateRange(lead, dateRangeStart),
+	);
 
 	const totalLeads = leads.length;
 	const newLeads = leads.filter((lead) => lead.status === "New").length;
