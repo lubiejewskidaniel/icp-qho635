@@ -170,6 +170,39 @@ export default function LeadDetails({ leadId }) {
 				assignedAgentName: selectedAgent.name,
 			}));
 
+			// Notify agent about new assignment
+			if (selectedAgent.email) {
+				try {
+					await fetch("/api/send-lead-email", {
+						method: "POST",
+						headers: {
+							"Content-Type": "application/json",
+						},
+						body: JSON.stringify({
+							to: selectedAgent.email,
+							subject: `New Lead Assigned: ${lead.fullName}`,
+							message: `
+								Hello ${selectedAgent.name},
+
+								A new lead has been assigned to you.
+
+								Lead Name: ${lead.fullName}
+								Email: ${lead.email || "-"}
+								Phone: ${lead.phone || "-"}
+								Location: ${lead.location || "-"}
+
+								Please review the lead and follow up as soon as possible.
+
+								Kind regards,
+								PLMS Team
+						`.trim(),
+						}),
+					});
+				} catch (emailError) {
+					console.error("Could not send assignment notification:", emailError);
+				}
+			}
+
 			await refreshActivities();
 		} finally {
 			setSaving(false);
