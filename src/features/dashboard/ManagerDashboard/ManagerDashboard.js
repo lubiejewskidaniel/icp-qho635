@@ -116,6 +116,32 @@ export default function ManagerDashboard() {
 						</div>
 					)}
 				</div>
+
+				<div className={styles.agentPerformanceCard}>
+					<div className={styles.agentPerformanceHeader}>
+						<div>
+							<h2>Agent Performance</h2>
+							<p>Number of leads assigned to each agent.</p>
+						</div>
+					</div>
+
+					{stats.agentPerformance?.length === 0 ? (
+						<p className={styles.emptyState}>No agent performance data yet.</p>
+					) : (
+						<div className={styles.agentPerformanceList}>
+							{stats.agentPerformance?.map((agent) => (
+								<div
+									key={agent.agentName}
+									className={styles.agentPerformanceItem}
+								>
+									{/* Shows how many leads are assigned to this agent */}
+									<span>{agent.agentName}</span>
+									<strong>{agent.count} leads</strong>
+								</div>
+							))}
+						</div>
+					)}
+				</div>
 			</div>
 		</section>
 	);
