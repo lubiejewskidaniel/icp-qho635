@@ -44,19 +44,38 @@ export default function Sidebar() {
 					)}
 
 					{role === "manager" && (
-						<li>
-							<Link href="/dashboard/agents" className={styles.link}>
-								Agents
-							</Link>
-						</li>
+						<>
+							<li className={styles.sectionTitle}>Settings</li>
+
+							<li>
+								<Link href="/dashboard/agents" className={styles.link}>
+									Manage Agents
+								</Link>
+							</li>
+
+							<li>
+								<Link
+									href="/dashboard/settings/lead-statuses"
+									className={styles.link}
+								>
+									Manage Lead Statuses
+								</Link>
+							</li>
+
+							<li>
+								<Link
+									href="/dashboard/settings/lead-sources"
+									className={styles.link}
+								>
+									Manage Lead Sources
+								</Link>
+							</li>
+						</>
 					)}
 				</ul>
 			</nav>
 
-			<button
-				onClick={handleLogout}
-				className={styles.logoutButton}
-			>
+			<button onClick={handleLogout} className={styles.logoutButton}>
 				Logout
 			</button>
 		</aside>
