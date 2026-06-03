@@ -1,3 +1,8 @@
+/*
+Follow-up reminders are implemented using a scheduled Vercel Cron Job. 
+The cron job runs daily and calls the /api/send-follow-up-reminders endpoint.
+The endpoint checks Firestore for leads with nextFollowUpDate equal to the current date, groups them by assigned agent, and sends one SMTP reminder email per agent.
+*/
 import nodemailer from "nodemailer";
 import { adminDb } from "@/lib/firebase/admin";
 
