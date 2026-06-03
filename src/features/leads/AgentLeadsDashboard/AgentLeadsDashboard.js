@@ -89,7 +89,11 @@ export default function AgentLeadsDashboard() {
 				statusFilter === "All" || lead.status === statusFilter;
 
 			const matchesAgent =
-				agentFilter === "All" || lead.assignedAgentId === agentFilter;
+				agentFilter === "All"
+					? true
+					: agentFilter === "Unassigned"
+						? !lead.assignedAgentId
+						: lead.assignedAgentId === agentFilter;
 
 			const matchesSource =
 				sourceFilter === "All" || lead.source === sourceFilter;
@@ -163,6 +167,7 @@ export default function AgentLeadsDashboard() {
 							onChange={(e) => setAgentFilter(e.target.value)}
 						>
 							<option value="All">All agents</option>
+							<option value="Unassigned">Unassigned leads</option>
 
 							{agents.map((agent) => (
 								<option key={agent.id} value={agent.id}>

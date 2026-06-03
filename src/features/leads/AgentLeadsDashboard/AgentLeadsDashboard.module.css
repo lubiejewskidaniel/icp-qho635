@@ -9,48 +9,80 @@
 	justify-content: space-between;
 	align-items: center;
 	gap: 16px;
+	background: white;
+	padding: 24px;
+	border-radius: 14px;
+	border: 1px solid #e2e8f0;
+	box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
 }
 
 .header h1 {
 	font-size: 28px;
-	margin-bottom: 4px;
+	margin-bottom: 6px;
 	color: #0f172a;
 }
 
 .header p {
 	color: #64748b;
+	line-height: 1.5;
+}
+
+.headerActions {
+	display: flex;
+	gap: 12px;
+	align-items: center;
 }
 
 .addButton {
-	background: #2563eb;
+	padding: 11px 18px;
+	border-radius: 10px;
+	background: linear-gradient(135deg, #161920, #1d4ed8);
 	color: white;
-	padding: 10px 16px;
-	border-radius: 8px;
 	text-decoration: none;
+	font-size: 14px;
 	font-weight: 600;
+	transition: all 0.2s ease;
+	white-space: nowrap;
+}
+
+.addButton:hover {
+	transform: translateY(-2px);
+	box-shadow: 0 8px 25px rgb(88, 137, 128);
 }
 
 .filters {
-	display: flex;
+	display: grid;
+	grid-template-columns: 2fr 1fr 1fr 1fr;
 	gap: 12px;
+	background: white;
+	padding: 20px;
+	border-radius: 14px;
+	border: 1px solid #e2e8f0;
+	box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
 }
 
 .filters input,
 .filters select {
+	width: 100%;
 	padding: 10px 12px;
 	border: 1px solid #cbd5e1;
 	border-radius: 8px;
 	font-size: 14px;
+	color: #0f172a;
+	background: white;
 }
 
-.filters input {
-	min-width: 280px;
+.filters input:focus,
+.filters select:focus {
+	outline: none;
+	border-color: #1d4ed8;
+	box-shadow: 0 0 0 3px rgba(29, 78, 216, 0.12);
 }
 
 .grid {
 	display: grid;
-	grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-	gap: 16px;
+	grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+	gap: 18px;
 }
 
 .card {
@@ -61,12 +93,13 @@
 	text-decoration: none;
 	color: inherit;
 	box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
-	transition: 0.2s ease;
+	transition: all 0.2s ease;
 }
 
 .card:hover {
-	transform: translateY(-2px);
+	transform: translateY(-3px);
 	box-shadow: 0 12px 30px rgba(15, 23, 42, 0.1);
+	border-color: #cbd5e1;
 }
 
 .cardHeader {
@@ -74,11 +107,12 @@
 	justify-content: space-between;
 	align-items: flex-start;
 	gap: 12px;
-	margin-bottom: 12px;
+	margin-bottom: 14px;
 }
 
 .cardHeader h3 {
 	font-size: 18px;
+	line-height: 1.25;
 	color: #0f172a;
 }
 
@@ -86,21 +120,21 @@
 	font-size: 12px;
 	background: #dbeafe;
 	color: #1d4ed8;
-	padding: 4px 8px;
+	padding: 5px 9px;
 	border-radius: 999px;
 	white-space: nowrap;
+	font-weight: 600;
 }
 
 .card p {
 	font-size: 14px;
 	color: #475569;
-	margin-bottom: 6px;
+	margin-bottom: 7px;
+	line-height: 1.45;
 }
 
-.headerActions {
-	display: flex;
-	gap: 20px;
-	align-items: center;
+.card p strong {
+	color: #334155;
 }
 
 .pagination {
@@ -112,13 +146,19 @@
 }
 
 .pagination button {
-	padding: 8px 14px;
+	padding: 10px 16px;
 	border: none;
-	border-radius: 8px;
-	background: #2563eb;
+	border-radius: 10px;
+	background: linear-gradient(135deg, #161920, #1d4ed8);
 	color: white;
 	cursor: pointer;
 	font-weight: 600;
+	transition: all 0.2s ease;
+}
+
+.pagination button:hover:not(:disabled) {
+	transform: translateY(-2px);
+	box-shadow: 0 8px 25px rgb(88, 137, 128);
 }
 
 .pagination button:disabled {
@@ -129,4 +169,34 @@
 .pagination span {
 	font-size: 14px;
 	color: #475569;
+}
+
+@media (max-width: 1100px) {
+	.filters {
+		grid-template-columns: 1fr 1fr;
+	}
+}
+
+@media (max-width: 720px) {
+	.header {
+		align-items: flex-start;
+		flex-direction: column;
+	}
+
+	.headerActions {
+		width: 100%;
+	}
+
+	.addButton {
+		text-align: center;
+		flex: 1;
+	}
+
+	.filters {
+		grid-template-columns: 1fr;
+	}
+
+	.grid {
+		grid-template-columns: 1fr;
+	}
 }

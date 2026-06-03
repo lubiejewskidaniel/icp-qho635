@@ -4,6 +4,14 @@
 	gap: 24px;
 }
 
+.header {
+	background: white;
+	padding: 24px;
+	border-radius: 14px;
+	border: 1px solid #e2e8f0;
+	box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
+}
+
 .header h1 {
 	margin: 0;
 	font-size: 28px;
@@ -11,8 +19,9 @@
 }
 
 .header p {
-	margin: 6px 0 0;
+	margin: 8px 0 0;
 	color: #64748b;
+	line-height: 1.5;
 }
 
 .grid {
@@ -24,15 +33,15 @@
 
 .card {
 	background: #ffffff;
-	border: 1px solid #e5e7eb;
-	border-radius: 20px;
+	border: 1px solid #e2e8f0;
+	border-radius: 14px;
 	padding: 24px;
 	box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
 }
 
 .card h2 {
 	margin: 0 0 20px;
-	font-size: 22px;
+	font-size: 20px;
 	color: #0f172a;
 }
 
@@ -40,27 +49,42 @@
 	display: block;
 	margin: 14px 0 6px;
 	font-size: 14px;
-	font-weight: 500;
+	font-weight: 600;
 	color: #334155;
 }
 
 .card input {
 	width: 100%;
-	padding: 12px 14px;
+	padding: 10px 12px;
 	border: 1px solid #cbd5e1;
-	border-radius: 12px;
+	border-radius: 8px;
 	font-size: 14px;
+	color: #0f172a;
+	background: white;
+}
+
+.card input:focus {
+	outline: none;
+	border-color: #1d4ed8;
+	box-shadow: 0 0 0 3px rgba(29, 78, 216, 0.12);
 }
 
 .card button {
 	margin-top: 16px;
-	padding: 11px 16px;
+	padding: 11px 18px;
 	border: none;
-	border-radius: 12px;
-	background: #2563eb;
+	border-radius: 10px;
+	background: linear-gradient(135deg, #161920, #1d4ed8);
 	color: #ffffff;
+	font-size: 14px;
 	font-weight: 600;
 	cursor: pointer;
+	transition: all 0.2s ease;
+}
+
+.card button:hover:not(:disabled) {
+	transform: translateY(-2px);
+	box-shadow: 0 8px 25px rgb(88, 137, 128);
 }
 
 .card button:disabled {
@@ -80,19 +104,30 @@
 	gap: 16px;
 	align-items: center;
 	padding: 16px;
-	border: 1px solid #e5e7eb;
-	border-radius: 14px;
+	border: 1px solid #e2e8f0;
+	border-radius: 12px;
 	background: #f8fafc;
+	transition: all 0.2s ease;
+}
+
+.agentItem:hover {
+	border-color: #cbd5e1;
+	box-shadow: 0 6px 18px rgba(15, 23, 42, 0.05);
 }
 
 .agentItem strong {
 	color: #0f172a;
+	font-size: 15px;
 }
 
 .agentItem p {
 	margin: 4px 0 0;
 	color: #64748b;
 	font-size: 14px;
+}
+
+.agentItem input {
+	margin-bottom: 0;
 }
 
 .actions {
@@ -103,14 +138,30 @@
 
 .actions button {
 	margin-top: 0;
+	padding: 8px 14px;
+	font-size: 13px;
+	border-radius: 10px;
 }
 
 .secondaryButton {
-	background: #64748b !important;
+	background: white !important;
+	color: #475569 !important;
+	border: 1px solid #cbd5e1 !important;
+}
+
+.secondaryButton:hover:not(:disabled) {
+	background: #f8fafc !important;
+	transform: translateY(-1px);
+	box-shadow: none;
 }
 
 .dangerButton {
-	background: #dc2626 !important;
+	background: linear-gradient(135deg, #991b1b, #dc2626) !important;
+}
+
+.dangerButton:hover:not(:disabled) {
+	transform: translateY(-2px);
+	box-shadow: 0 8px 20px rgba(220, 38, 38, 0.35);
 }
 
 .error {
@@ -118,6 +169,7 @@
 	border-radius: 12px;
 	background: #fee2e2;
 	color: #991b1b;
+	font-size: 14px;
 }
 
 .success {
@@ -125,6 +177,7 @@
 	border-radius: 12px;
 	background: #dcfce7;
 	color: #166534;
+	font-size: 14px;
 }
 
 @media (max-width: 900px) {
@@ -135,5 +188,13 @@
 	.agentItem {
 		align-items: flex-start;
 		flex-direction: column;
+	}
+
+	.actions {
+		width: 100%;
+	}
+
+	.actions button {
+		flex: 1;
 	}
 }
