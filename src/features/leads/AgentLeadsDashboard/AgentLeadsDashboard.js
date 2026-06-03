@@ -197,12 +197,36 @@ export default function AgentLeadsDashboard() {
 					<Link
 						key={lead.id}
 						href={`/dashboard/leads/${lead.id}`}
-						className={styles.card}
+						className={`${styles.card} ${
+							String(lead.status || "")
+								.toLowerCase()
+								.includes("won")
+								? styles.wonCard
+								: String(lead.status || "")
+											.toLowerCase()
+											.includes("lost")
+									? styles.lostCard
+									: ""
+						}`}
 					>
 						<div className={styles.cardHeader}>
 							<h3>{lead.fullName}</h3>
 
-							<span>{lead.status}</span>
+							<span
+								className={`${styles.statusBadge} ${
+									String(lead.status || "")
+										.toLowerCase()
+										.includes("won")
+										? styles.wonStatus
+										: String(lead.status || "")
+													.toLowerCase()
+													.includes("lost")
+											? styles.lostStatus
+											: styles.defaultStatus
+								}`}
+							>
+								{lead.status}
+							</span>
 						</div>
 
 						<p>

@@ -116,14 +116,30 @@
 	color: #0f172a;
 }
 
-.cardHeader span {
+.statusBadge {
 	font-size: 12px;
+	padding: 5px 10px;
+	border-radius: 999px;
+	font-weight: 600;
+	white-space: nowrap;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.defaultStatus {
 	background: #dbeafe;
 	color: #1d4ed8;
-	padding: 5px 9px;
-	border-radius: 999px;
-	white-space: nowrap;
-	font-weight: 600;
+}
+
+.wonStatus {
+	background: #dcfce7;
+	color: #166534;
+}
+
+.lostStatus {
+	background: #fee2e2;
+	color: #991b1b;
 }
 
 .card p {
@@ -135,6 +151,24 @@
 
 .card p strong {
 	color: #334155;
+}
+
+.wonCard {
+	border-left: 5px solid #16a34a;
+	background: linear-gradient(to right, rgba(22, 163, 74, 0.04), white 25%);
+}
+
+.wonCard:hover {
+	border-left-color: #15803d;
+}
+
+.lostCard {
+	border-left: 5px solid #dc2626;
+	background: linear-gradient(to right, rgba(220, 38, 38, 0.04), white 25%);
+}
+
+.lostCard:hover {
+	border-left-color: #b91c1c;
 }
 
 .pagination {
