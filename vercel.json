@@ -1,5 +1,4 @@
 {
-	"description": "Runs the follow-up reminder endpoint every day at 8 AM using a Vercel Cron Job.",
 	"crons": [
 		{
 			"path": "/api/send-follow-up-reminders",
