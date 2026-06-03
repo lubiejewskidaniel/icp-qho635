@@ -5,7 +5,6 @@ import { useEffect, useState } from "react";
 import {
 	getLeadStatuses,
 	createLeadStatus,
-	updateLeadStatusSetting,
 	deleteLeadStatusSetting,
 } from "@/services/settings/leadStatusService";
 
@@ -15,7 +14,6 @@ export default function LeadStatusesManager() {
 	const [statuses, setStatuses] = useState([]);
 	const [name, setName] = useState("");
 	const [order, setOrder] = useState("");
-	const [editingId, setEditingId] = useState(null);
 	const [loading, setLoading] = useState(true);
 	const [saving, setSaving] = useState(false);
 
@@ -37,37 +35,22 @@ export default function LeadStatusesManager() {
 		setSaving(true);
 
 		try {
-			if (editingId) {
-				await updateLeadStatusSetting(editingId, {
-					name: name.trim(),
-					order,
-					active: true,
-				});
-			} else {
-				await createLeadStatus({
-					name: name.trim(),
-					order,
-				});
-			}
+			await createLeadStatus({
+				name: name.trim(),
+				order,
+			});
 
 			setName("");
 			setOrder("");
-			setEditingId(null);
 			await loadStatuses();
 		} finally {
 			setSaving(false);
 		}
 	}
 
-	function handleEdit(status) {
-		setEditingId(status.id);
-		setName(status.name);
-		setOrder(status.order || "");
-	}
-
 	async function handleDelete(statusId) {
 		const confirmed = window.confirm(
-			"Are you sure you want to delete this lead status?",
+			"Are you sure you want to delete this lead status? Existing leads with this status will keep their current value.",
 		);
 
 		if (!confirmed) return;
@@ -82,11 +65,11 @@ export default function LeadStatusesManager() {
 		<section className={styles.wrapper}>
 			<div className={styles.header}>
 				<h1>Manage Lead Statuses</h1>
-				<p>Add, edit or delete lead statuses used in the CRM pipeline.</p>
+				<p>Add or remove lead statuses used in the CRM pipeline.</p>
 			</div>
 
 			<div className={styles.card}>
-				<h2>{editingId ? "Edit Status" : "Add New Status"}</h2>
+				<h2>Add New Status</h2>
 
 				<form onSubmit={handleSubmit}>
 					<div className={styles.form}>
@@ -115,23 +98,9 @@ export default function LeadStatusesManager() {
 							disabled={saving}
 							className={styles.primaryButton}
 						>
-							{editingId ? "Update Status" : "Add Status"}
+							Add Status
 						</button>
 					</div>
-
-					{editingId && (
-						<button
-							type="button"
-							className={styles.cancelButton}
-							onClick={() => {
-								setEditingId(null);
-								setName("");
-								setOrder("");
-							}}
-						>
-							Cancel Edit
-						</button>
-					)}
 				</form>
 			</div>
 
@@ -152,14 +121,6 @@ export default function LeadStatusesManager() {
 								</div>
 
 								<div className={styles.actions}>
-									<button
-										type="button"
-										className={styles.editButton}
-										onClick={() => handleEdit(status)}
-									>
-										Edit
-									</button>
-
 									<button
 										type="button"
 										className={styles.deleteButton}
