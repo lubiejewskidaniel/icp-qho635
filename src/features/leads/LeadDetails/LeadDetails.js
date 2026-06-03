@@ -2,10 +2,10 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { LEAD_STATUS_OPTIONS } from "@/constants/leadStatuses";
 import { MANUAL_ACTIVITY_OPTIONS } from "@/constants/activityTypes";
 import { useAuth } from "@/providers/AuthProvider/AuthProvider";
 import { getAgents } from "@/services/users/userService";
+import { getLeadStatuses } from "@/services/settings/leadStatusService";
 import { EMAIL_TEMPLATES } from "@/constants/emailTemplates";
 import { STATUS_NOTIFICATION_TEMPLATES } from "@/constants/statusNotificationTemplates";
 
@@ -28,6 +28,7 @@ export default function LeadDetails({ leadId }) {
 
 	const [lead, setLead] = useState(null);
 	const [agents, setAgents] = useState([]);
+	const [leadStatuses, setLeadStatuses] = useState([]);
 	const [activities, setActivities] = useState([]);
 	const [lastVisibleActivity, setLastVisibleActivity] = useState(null);
 	const [hasMoreActivities, setHasMoreActivities] = useState(false);
@@ -71,6 +72,20 @@ export default function LeadDetails({ leadId }) {
 
 		loadLead();
 	}, [leadId]);
+
+	useEffect(() => {
+		async function loadLeadStatuses() {
+			try {
+				const data = await getLeadStatuses();
+
+				setLeadStatuses(data.filter((status) => status.active !== false));
+			} catch (error) {
+				console.error("Could not load lead statuses:", error);
+			}
+		}
+
+		loadLeadStatuses();
+	}, []);
 
 	useEffect(() => {
 		if (role !== "manager") return;
@@ -454,9 +469,9 @@ PLMS Team
 						onChange={handleStatusChange}
 						disabled={saving}
 					>
-						{LEAD_STATUS_OPTIONS.map((status) => (
-							<option key={status} value={status}>
-								{status}
+						{leadStatuses.map((status) => (
+							<option key={status.id} value={status.name}>
+								{status.name}
 							</option>
 						))}
 					</select>

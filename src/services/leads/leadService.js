@@ -16,7 +16,8 @@ import {
 } from "firebase/firestore";
 
 import { db } from "@/lib/firebase/config";
-import { LEAD_STATUSES } from "@/constants/leadStatuses";
+
+const DEFAULT_LEAD_STATUS = "New";
 
 export async function createLead(data) {
 	const docRef = await addDoc(collection(db, "leads"), {
@@ -38,7 +39,7 @@ export async function createLead(data) {
 
 		createdBy: data.createdBy || null,
 
-		status: data.status || LEAD_STATUSES.NEW,
+		status: data.status || DEFAULT_LEAD_STATUS,
 
 		lastContactDate: null,
 		lastActivityAt: serverTimestamp(),
@@ -57,7 +58,7 @@ export async function createInternalLead(data) {
 		source: "manual",
 		assignedAgentId: data.assignedAgentId || data.createdBy || null,
 		assignedAgentName: data.assignedAgentName || null,
-		status: data.status || LEAD_STATUSES.NEW,
+		status: data.status || DEFAULT_LEAD_STATUS,
 	});
 }
 
@@ -266,7 +267,7 @@ export async function importCsvLeads(rows, meta = {}) {
 
 			createdBy: meta.createdBy || null,
 
-			status: LEAD_STATUSES.NEW,
+			status: DEFAULT_LEAD_STATUS,
 
 			lastContactDate: null,
 			lastActivityAt: serverTimestamp(),

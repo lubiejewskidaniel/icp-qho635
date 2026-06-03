@@ -5,8 +5,8 @@ import Link from "next/link";
 import { useAuth } from "@/providers/AuthProvider/AuthProvider";
 import { getAllLeads, getAssignedLeads } from "@/services/leads/leadService";
 import { getAgents } from "@/services/users/userService";
-import { LEAD_STATUS_OPTIONS } from "@/constants/leadStatuses";
-import { LEAD_SOURCE_OPTIONS } from "@/constants/leadSources";
+import { getLeadStatuses } from "@/services/settings/leadStatusService";
+import { getLeadSources } from "@/services/settings/leadSourceService";
 import styles from "./AgentLeadsDashboard.module.css";
 
 const LEADS_PER_PAGE = 10;
@@ -16,6 +16,8 @@ export default function AgentLeadsDashboard() {
 
 	const [leads, setLeads] = useState([]);
 	const [agents, setAgents] = useState([]);
+	const [leadStatuses, setLeadStatuses] = useState([]);
+	const [leadSources, setLeadSources] = useState([]);
 	const [loading, setLoading] = useState(true);
 
 	const [search, setSearch] = useState("");
@@ -42,6 +44,22 @@ export default function AgentLeadsDashboard() {
 
 		loadLeads();
 	}, [user, role]);
+
+	useEffect(() => {
+		async function loadSettings() {
+			try {
+				const statuses = await getLeadStatuses();
+				const sources = await getLeadSources();
+
+				setLeadStatuses(statuses.filter((status) => status.active !== false));
+				setLeadSources(sources.filter((source) => source.active !== false));
+			} catch (error) {
+				console.error("Could not load lead settings:", error);
+			}
+		}
+
+		loadSettings();
+	}, []);
 
 	useEffect(() => {
 		if (role !== "manager") return;
@@ -131,9 +149,9 @@ export default function AgentLeadsDashboard() {
 				>
 					<option value="All">All statuses</option>
 
-					{LEAD_STATUS_OPTIONS.map((status) => (
-						<option key={status} value={status}>
-							{status}
+					{leadStatuses.map((status) => (
+						<option key={status.id} value={status.name}>
+							{status.name}
 						</option>
 					))}
 				</select>
@@ -159,9 +177,9 @@ export default function AgentLeadsDashboard() {
 						>
 							<option value="All">All sources</option>
 
-							{LEAD_SOURCE_OPTIONS.map((source) => (
-								<option key={source} value={source}>
-									{source}
+							{leadSources.map((source) => (
+								<option key={source.id} value={source.name}>
+									{source.name}
 								</option>
 							))}
 						</select>

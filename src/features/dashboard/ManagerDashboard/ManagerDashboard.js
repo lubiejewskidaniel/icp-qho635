@@ -1,25 +1,31 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { LEAD_STATUS_OPTIONS } from "@/constants/leadStatuses";
 import { getManagerDashboardStats } from "@/services/dashboard/dashboardService";
+import { getLeadStatuses } from "@/services/settings/leadStatusService";
 import DashboardStatCard from "@/features/dashboard/DashboardStatCard/DashboardStatCard";
 import styles from "./ManagerDashboard.module.css";
 
 export default function ManagerDashboard() {
 	const [stats, setStats] = useState(null);
+	const [leadStatuses, setLeadStatuses] = useState([]);
 	const [loading, setLoading] = useState(true);
 
 	// Controls the reporting period for dashboard statistics
 	const [dateRange, setDateRange] = useState("all");
 
 	useEffect(() => {
-		async function loadStats() {
+		async function loadDashboardData() {
 			setLoading(true);
 
 			try {
-				const data = await getManagerDashboardStats(dateRange);
-				setStats(data);
+				const [dashboardStats, statuses] = await Promise.all([
+					getManagerDashboardStats(dateRange),
+					getLeadStatuses(),
+				]);
+
+				setStats(dashboardStats);
+				setLeadStatuses(statuses.filter((status) => status.active !== false));
 			} catch (error) {
 				console.error("Could not load manager dashboard stats:", error);
 			} finally {
@@ -27,7 +33,7 @@ export default function ManagerDashboard() {
 			}
 		}
 
-		loadStats();
+		loadDashboardData();
 	}, [dateRange]);
 
 	if (loading) return <p>Loading dashboard...</p>;
@@ -106,12 +112,18 @@ export default function ManagerDashboard() {
 					</div>
 
 					<div className={styles.pipelineList}>
-						{LEAD_STATUS_OPTIONS.map((status) => (
-							<div key={status} className={styles.pipelineItem}>
-								<span>{status}</span>
-								<strong>{stats.leadStatusCounts?.[status] || 0}</strong>
-							</div>
-						))}
+						{leadStatuses.length === 0 ? (
+							<p className={styles.emptyState}>
+								No lead statuses configured yet.
+							</p>
+						) : (
+							leadStatuses.map((status) => (
+								<div key={status.id} className={styles.pipelineItem}>
+									<span>{status.name}</span>
+									<strong>{stats.leadStatusCounts?.[status.name] || 0}</strong>
+								</div>
+							))
+						)}
 					</div>
 				</div>
 
