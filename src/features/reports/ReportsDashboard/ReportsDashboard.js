@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 
 import { getAllLeads } from "@/services/leads/leadService";
@@ -20,6 +21,13 @@ function getDateFromLead(value) {
 
 function getTodayString() {
 	return new Date().toISOString().split("T")[0];
+}
+
+function formatLeadSubtitle(lead) {
+	const status = lead.status || "No status";
+	const location = lead.location || lead.city || "No location";
+
+	return `${status} • ${location}`;
 }
 
 export default function ReportsDashboard() {
@@ -51,20 +59,41 @@ export default function ReportsDashboard() {
 	}, []);
 
 	const leadsBySource = useMemo(() => {
-		const configuredSources = sources.map((source) => ({
-			label: source.name,
-			count: leads.filter((lead) => lead.source === source.name).length,
-		}));
+		const normalizeSource = (value) => {
+			return String(value || "")
+				.trim()
+				.toLowerCase();
+		};
 
-		const unknownCount = leads.filter(
-			(lead) =>
-				!lead.source || !sources.some((source) => source.name === lead.source),
-		).length;
+		const configuredSources = sources.map((source) => {
+			const sourceName = normalizeSource(source.name);
 
-		if (unknownCount > 0) {
+			const matchingLeads = leads.filter(
+				(lead) => normalizeSource(lead.source) === sourceName,
+			);
+
+			return {
+				label: source.name,
+				count: matchingLeads.length,
+				leads: matchingLeads,
+			};
+		});
+
+		const knownSourceNames = sources.map((source) =>
+			normalizeSource(source.name),
+		);
+
+		const unknownLeads = leads.filter((lead) => {
+			const leadSource = normalizeSource(lead.source);
+
+			return !leadSource || !knownSourceNames.includes(leadSource);
+		});
+
+		if (unknownLeads.length > 0) {
 			configuredSources.push({
 				label: "Other / Legacy",
-				count: unknownCount,
+				count: unknownLeads.length,
+				leads: unknownLeads,
 			});
 		}
 
@@ -72,19 +101,25 @@ export default function ReportsDashboard() {
 	}, [leads, sources]);
 
 	const agentWorkload = useMemo(() => {
-		const agentRows = agents.map((agent) => ({
-			label: agent.name || "Unnamed agent",
-			count: leads.filter((lead) => lead.assignedAgentId === agent.id).length,
-		}));
+		const agentRows = agents.map((agent) => {
+			const matchingLeads = leads.filter(
+				(lead) => lead.assignedAgentId === agent.id,
+			);
 
-		const unassignedCount = leads.filter(
-			(lead) => !lead.assignedAgentId,
-		).length;
+			return {
+				label: agent.name || "Unnamed agent",
+				count: matchingLeads.length,
+				leads: matchingLeads,
+			};
+		});
 
-		if (unassignedCount > 0) {
+		const unassignedLeads = leads.filter((lead) => !lead.assignedAgentId);
+
+		if (unassignedLeads.length > 0) {
 			agentRows.push({
 				label: "Unassigned",
-				count: unassignedCount,
+				count: unassignedLeads.length,
+				leads: unassignedLeads,
 			});
 		}
 
@@ -94,25 +129,41 @@ export default function ReportsDashboard() {
 	const followUpHealth = useMemo(() => {
 		const today = getTodayString();
 
-		const dueToday = leads.filter(
+		const dueTodayLeads = leads.filter(
 			(lead) => lead.nextFollowUpDate === today,
-		).length;
+		);
 
-		const overdue = leads.filter(
+		const overdueLeads = leads.filter(
 			(lead) => lead.nextFollowUpDate && lead.nextFollowUpDate < today,
-		).length;
+		);
 
-		const future = leads.filter(
+		const futureLeads = leads.filter(
 			(lead) => lead.nextFollowUpDate && lead.nextFollowUpDate > today,
-		).length;
+		);
 
-		const noFollowUp = leads.filter((lead) => !lead.nextFollowUpDate).length;
+		const noFollowUpLeads = leads.filter((lead) => !lead.nextFollowUpDate);
 
 		return [
-			{ label: "Due Today", count: dueToday },
-			{ label: "Overdue", count: overdue },
-			{ label: "Future Follow-Up", count: future },
-			{ label: "No Follow-Up", count: noFollowUp },
+			{
+				label: "Due Today",
+				count: dueTodayLeads.length,
+				leads: dueTodayLeads,
+			},
+			{
+				label: "Overdue",
+				count: overdueLeads.length,
+				leads: overdueLeads,
+			},
+			{
+				label: "Future Follow-Up",
+				count: futureLeads.length,
+				leads: futureLeads,
+			},
+			{
+				label: "No Follow-Up",
+				count: noFollowUpLeads.length,
+				leads: noFollowUpLeads,
+			},
 		];
 	}, [leads]);
 
@@ -167,18 +218,21 @@ export default function ReportsDashboard() {
 					title="Leads by Source"
 					description="Shows which channels are generating the most leads."
 					data={leadsBySource}
+					expandable
 				/>
 
 				<ReportCard
 					title="Agent Workload"
 					description="Shows how leads are distributed across agents."
 					data={agentWorkload}
+					expandable
 				/>
 
 				<ReportCard
 					title="Follow-Up Health"
 					description="Shows whether leads are being followed up on time."
 					data={followUpHealth}
+					expandable
 				/>
 
 				<ReportCard
@@ -191,8 +245,15 @@ export default function ReportsDashboard() {
 	);
 }
 
-function ReportCard({ title, description, data }) {
+function ReportCard({ title, description, data, expandable = false }) {
+	const [expandedLabel, setExpandedLabel] = useState(null);
 	const maxCount = Math.max(...data.map((item) => item.count), 1);
+
+	function toggleExpanded(label) {
+		if (!expandable) return;
+
+		setExpandedLabel((currentLabel) => (currentLabel === label ? null : label));
+	}
 
 	return (
 		<div className={styles.card}>
@@ -207,17 +268,44 @@ function ReportCard({ title, description, data }) {
 				) : (
 					data.map((item) => {
 						const width = `${Math.max((item.count / maxCount) * 100, 4)}%`;
+						const isExpanded = expandedLabel === item.label;
 
 						return (
 							<div key={item.label} className={styles.chartRow}>
-								<div className={styles.chartLabel}>
-									<span>{item.label}</span>
-									<strong>{item.count}</strong>
-								</div>
+								<button
+									type="button"
+									className={styles.chartButton}
+									onClick={() => toggleExpanded(item.label)}
+									disabled={!expandable || item.count === 0}
+								>
+									<div className={styles.chartLabel}>
+										<span>
+											{expandable && item.count > 0
+												? `${isExpanded ? "▾" : "▸"} ${item.label}`
+												: item.label}
+										</span>
+										<strong>{item.count}</strong>
+									</div>
 
-								<div className={styles.barTrack}>
-									<div className={styles.bar} style={{ width }} />
-								</div>
+									<div className={styles.barTrack}>
+										<div className={styles.bar} style={{ width }} />
+									</div>
+								</button>
+
+								{expandable && isExpanded && item.leads?.length > 0 && (
+									<div className={styles.leadList}>
+										{item.leads.map((lead) => (
+											<Link
+												key={lead.id}
+												href={`/dashboard/leads/${lead.id}`}
+												className={styles.leadItem}
+											>
+												<strong>{lead.fullName || "Unnamed lead"}</strong>
+												<span>{formatLeadSubtitle(lead)}</span>
+											</Link>
+										))}
+									</div>
+								)}
 							</div>
 						);
 					})
