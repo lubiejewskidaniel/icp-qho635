@@ -1,0 +1,118 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function userDoc() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid));
+    }
+
+    function isManager() {
+      return isSignedIn() && userDoc().data.role == "manager";
+    }
+
+    function isAgent() {
+      return isSignedIn() && userDoc().data.role == "agent";
+    }
+
+    function isAssignedAgent() {
+      return isSignedIn()
+        && resource.data.assignedAgentId == request.auth.uid;
+    }
+
+    // USERS
+    match /users/{userId} {
+
+      // Manager can read all users
+      // Users can read their own profile
+      allow read: if isManager() || request.auth.uid == userId;
+
+      // Users should not modify roles or user records directly
+      allow write: if false;
+    }
+
+    // LEADS
+    match /leads/{leadId} {
+
+      // Public enquiry form can create unassigned leads
+      allow create: if
+        request.resource.data.assignedAgentId == null
+        || request.resource.data.assignedAgentId == "";
+
+      // Manager can read all leads
+      // Agent can read only assigned leads
+      allow read: if isManager() || isAssignedAgent();
+
+      // Manager can update any lead
+      allow update: if isManager();
+
+      // Agent can update only their assigned lead
+      // and cannot reassign ownership
+      allow update: if isAssignedAgent()
+        && request.resource.data.assignedAgentId == resource.data.assignedAgentId;
+
+      // Managers can delete leads for GDPR deletion requests
+      allow delete: if isManager();
+    }
+
+    // ACTIVITIES
+    match /activities/{activityId} {
+
+      // Manager can read all activities
+      // Agent can read activities only for assigned leads
+      allow read: if isManager()
+        || (
+          isSignedIn()
+          && exists(
+            /databases/$(database)/documents/leads/$(resource.data.leadId)
+          )
+          && get(
+            /databases/$(database)/documents/leads/$(resource.data.leadId)
+          ).data.assignedAgentId == request.auth.uid
+        );
+
+      // Manager can create activities for any lead
+      // Agent can create activities only for assigned leads
+      allow create: if isManager()
+        || (
+          isSignedIn()
+          && exists(
+            /databases/$(database)/documents/leads/$(request.resource.data.leadId)
+          )
+          && get(
+            /databases/$(database)/documents/leads/$(request.resource.data.leadId)
+          ).data.assignedAgentId == request.auth.uid
+        );
+
+      // Activity history cannot be edited
+      allow update: if false;
+
+      // Managers can delete activities during GDPR lead deletion
+      allow delete: if isManager();
+    }
+
+    // LEAD STATUSES
+    match /leadStatuses/{statusId} {
+
+      // Logged-in users can read lead statuses
+      allow read: if isSignedIn();
+
+      // Only managers can create, update and delete lead statuses
+      allow write: if isManager();
+    }
+
+    // LEAD SOURCES
+    match /leadSources/{sourceId} {
+
+      // Logged-in users can read lead sources
+      allow read: if isSignedIn();
+
+      // Only managers can create, update and delete lead sources
+      allow write: if isManager();
+    }
+  }
+}
