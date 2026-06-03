@@ -7,6 +7,9 @@ import {
 	updateAgent,
 	deleteAgent,
 } from "@/services/agents/agentService";
+
+import AgentForm from "./AgentForm";
+import AgentList from "./AgentList";
 import styles from "./ManageAgents.module.css";
 
 export default function ManageAgents() {
@@ -154,117 +157,32 @@ export default function ManageAgents() {
 			{success && <p className={styles.success}>{success}</p>}
 
 			<div className={styles.grid}>
-				<form className={styles.card} onSubmit={handleCreateAgent}>
-					<h2>Add Agent</h2>
+				<AgentForm
+					name={name}
+					email={email}
+					password={password}
+					saving={saving}
+					onNameChange={setName}
+					onEmailChange={setEmail}
+					onPasswordChange={setPassword}
+					onSubmit={handleCreateAgent}
+					styles={styles}
+				/>
 
-					<label>Name</label>
-					<input
-						type="text"
-						value={name}
-						onChange={(e) => setName(e.target.value)}
-						placeholder="Agent name"
-						disabled={saving}
-					/>
-
-					<label>Email</label>
-					<input
-						type="email"
-						value={email}
-						onChange={(e) => setEmail(e.target.value)}
-						placeholder="agent@example.com"
-						disabled={saving}
-					/>
-
-					<label>Temporary password</label>
-					<input
-						type="password"
-						value={password}
-						onChange={(e) => setPassword(e.target.value)}
-						placeholder="Minimum 6 characters"
-						disabled={saving}
-					/>
-
-					<button type="submit" disabled={saving}>
-						{saving ? "Saving..." : "Create Agent"}
-					</button>
-				</form>
-
-				<div className={styles.card}>
-					<h2>Agents</h2>
-
-					{agents.length === 0 ? (
-						<p>No agents yet.</p>
-					) : (
-						<div className={styles.agentList}>
-							{agents.map((agent) => (
-								<div key={agent.id} className={styles.agentItem}>
-									{editingAgentId === agent.id ? (
-										<>
-											<input
-												type="text"
-												value={editName}
-												onChange={(e) => setEditName(e.target.value)}
-												disabled={saving}
-											/>
-
-											<input
-												type="email"
-												value={editEmail}
-												onChange={(e) => setEditEmail(e.target.value)}
-												disabled={saving}
-											/>
-
-											<div className={styles.actions}>
-												<button
-													type="button"
-													onClick={() => handleUpdateAgent(agent.id)}
-													disabled={saving}
-												>
-													Save
-												</button>
-
-												<button
-													type="button"
-													onClick={cancelEditing}
-													disabled={saving}
-													className={styles.secondaryButton}
-												>
-													Cancel
-												</button>
-											</div>
-										</>
-									) : (
-										<>
-											<div>
-												<strong>{agent.name || "Unnamed agent"}</strong>
-												<p>{agent.email}</p>
-											</div>
-
-											<div className={styles.actions}>
-												<button
-													type="button"
-													onClick={() => startEditing(agent)}
-													disabled={saving}
-												>
-													Edit
-												</button>
-
-												<button
-													type="button"
-													onClick={() => handleDeleteAgent(agent.id)}
-													disabled={saving}
-													className={styles.dangerButton}
-												>
-													Delete
-												</button>
-											</div>
-										</>
-									)}
-								</div>
-							))}
-						</div>
-					)}
-				</div>
+				<AgentList
+					agents={agents}
+					saving={saving}
+					editingAgentId={editingAgentId}
+					editName={editName}
+					editEmail={editEmail}
+					onEditNameChange={setEditName}
+					onEditEmailChange={setEditEmail}
+					onStartEditing={startEditing}
+					onCancelEditing={cancelEditing}
+					onUpdateAgent={handleUpdateAgent}
+					onDeleteAgent={handleDeleteAgent}
+					styles={styles}
+				/>
 			</div>
 		</section>
 	);

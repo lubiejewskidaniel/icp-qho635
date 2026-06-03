@@ -158,3 +158,37 @@
 	font-size: 16px;
 	color: #0f172a;
 }
+
+.dangerZone {
+	margin-top: 28px;
+	padding: 16px;
+	border: 1px solid #fecaca;
+	border-radius: 12px;
+	background: #fef2f2;
+}
+
+.dangerZone p {
+	color: #991b1b;
+	font-size: 14px;
+	margin-bottom: 12px;
+}
+
+.deleteButton {
+	width: 100%;
+	padding: 12px;
+	border: none;
+	border-radius: 8px;
+	background: #dc2626;
+	color: white;
+	cursor: pointer;
+	font-weight: 600;
+}
+
+.deleteButton:hover {
+	background: #b91c1c;
+}
+
+.deleteButton:disabled {
+	opacity: 0.6;
+	cursor: not-allowed;
+}

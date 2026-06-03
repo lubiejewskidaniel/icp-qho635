@@ -13,47 +13,46 @@
 }
 
 .header h1 {
-	margin: 0;
 	font-size: 28px;
+	margin-bottom: 8px;
 	color: #0f172a;
 }
 
 .header p {
-	margin: 8px 0 0;
 	color: #64748b;
 	line-height: 1.5;
 }
 
-.grid {
-	display: grid;
-	grid-template-columns: 420px 1fr;
-	gap: 24px;
-	align-items: start;
-}
-
 .card {
-	background: #ffffff;
-	border: 1px solid #e2e8f0;
-	border-radius: 14px;
+	background: white;
 	padding: 24px;
+	border-radius: 14px;
+	border: 1px solid #e2e8f0;
 	box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
 }
 
 .card h2 {
-	margin: 0 0 20px;
-	font-size: 20px;
+	font-size: 18px;
+	margin-bottom: 16px;
 	color: #0f172a;
 }
 
-.card label {
+.form {
+	display: grid;
+	grid-template-columns: 2fr 1fr auto;
+	gap: 14px;
+	align-items: end;
+}
+
+.field label {
 	display: block;
-	margin: 14px 0 6px;
 	font-size: 14px;
 	font-weight: 600;
 	color: #334155;
+	margin-bottom: 6px;
 }
 
-.card input {
+.field input {
 	width: 100%;
 	padding: 10px 12px;
 	border: 1px solid #cbd5e1;
@@ -63,45 +62,67 @@
 	background: white;
 }
 
-.card input:focus {
+.field input:focus {
 	outline: none;
 	border-color: #1d4ed8;
 	box-shadow: 0 0 0 3px rgba(29, 78, 216, 0.12);
 }
 
-.card button {
-	margin-top: 16px;
+.primaryButton {
 	padding: 11px 18px;
 	border: none;
 	border-radius: 10px;
 	background: linear-gradient(135deg, #161920, #1d4ed8);
-	color: #ffffff;
+	color: white;
+	font-size: 14px;
+	font-weight: 600;
+	cursor: pointer;
+	transition: all 0.2s ease;
+	white-space: nowrap;
+}
+
+.primaryButton:hover:not(:disabled) {
+	transform: translateY(-2px);
+	box-shadow: 0 8px 25px rgb(88, 137, 128);
+}
+
+.primaryButton:disabled {
+	opacity: 0.6;
+	cursor: not-allowed;
+}
+
+.cancelButton {
+	margin-top: 14px;
+	padding: 10px 16px;
+	border-radius: 10px;
+	border: 1px solid #cbd5e1;
+	background: white;
+	color: #475569;
 	font-size: 14px;
 	font-weight: 600;
 	cursor: pointer;
 	transition: all 0.2s ease;
 }
 
-.card button:hover:not(:disabled) {
-	transform: translateY(-2px);
-	box-shadow: 0 8px 25px rgb(88, 137, 128);
+.cancelButton:hover {
+	background: #f8fafc;
+	transform: translateY(-1px);
 }
 
-.card button:disabled {
-	opacity: 0.6;
-	cursor: not-allowed;
-}
-
-.agentList {
+.list {
 	display: flex;
 	flex-direction: column;
 	gap: 12px;
 }
 
-.agentItem {
+.empty {
+	color: #64748b;
+	font-size: 14px;
+}
+
+.item {
 	display: flex;
 	justify-content: space-between;
-	gap: 16px;
 	align-items: center;
 	padding: 16px;
 	border: 1px solid #e2e8f0;
@@ -110,84 +131,76 @@
 	transition: all 0.2s ease;
 }
 
-.agentItem:hover {
+.item:hover {
 	border-color: #cbd5e1;
 	box-shadow: 0 6px 18px rgba(15, 23, 42, 0.05);
 }
 
-.agentItem strong {
-	color: #0f172a;
+.itemInfo {
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+}
+
+.itemName {
 	font-size: 15px;
+	font-weight: 700;
+	color: #0f172a;
 }
 
-.agentItem p {
-	margin: 4px 0 0;
+.itemMeta {
+	font-size: 13px;
 	color: #64748b;
-	font-size: 14px;
-}
-
-.agentItem input {
-	margin-bottom: 0;
 }
 
 .actions {
 	display: flex;
 	gap: 8px;
-	align-items: center;
 }
 
-.actions button {
-	margin-top: 0;
+.editButton {
 	padding: 8px 14px;
-	font-size: 13px;
+	border: none;
 	border-radius: 10px;
+	background: linear-gradient(135deg, #161920, #1d4ed8);
+	color: white;
+	cursor: pointer;
+	font-size: 13px;
+	font-weight: 600;
+	transition: all 0.2s ease;
 }
 
-.secondaryButton {
-	background: white !important;
-	color: #475569 !important;
-	border: 1px solid #cbd5e1 !important;
+.editButton:hover {
+	transform: translateY(-2px);
+	box-shadow: 0 8px 25px rgb(88, 137, 128);
 }
 
-.secondaryButton:hover:not(:disabled) {
-	background: #f8fafc !important;
-	transform: translateY(-1px);
-	box-shadow: none;
+.deleteButton {
+	padding: 8px 14px;
+	border: none;
+	border-radius: 10px;
+	background: linear-gradient(135deg, #991b1b, #dc2626);
+	color: white;
+	cursor: pointer;
+	font-size: 13px;
+	font-weight: 600;
+	transition: all 0.2s ease;
 }
 
-.dangerButton {
-	background: linear-gradient(135deg, #991b1b, #dc2626) !important;
-}
-
-.dangerButton:hover:not(:disabled) {
+.deleteButton:hover {
 	transform: translateY(-2px);
 	box-shadow: 0 8px 20px rgba(220, 38, 38, 0.35);
 }
 
-.error {
-	padding: 12px 14px;
-	border-radius: 12px;
-	background: #fee2e2;
-	color: #991b1b;
-	font-size: 14px;
-}
-
-.success {
-	padding: 12px 14px;
-	border-radius: 12px;
-	background: #dcfce7;
-	color: #166534;
-	font-size: 14px;
-}
-
-@media (max-width: 900px) {
-	.grid {
+@media (max-width: 720px) {
+	.form {
 		grid-template-columns: 1fr;
 	}
 
-	.agentItem {
+	.item {
 		align-items: flex-start;
 		flex-direction: column;
+		gap: 12px;
 	}
 
 	.actions {

@@ -9,13 +9,15 @@ import {
 	doc,
 	getDoc,
 	updateDoc,
+	deleteDoc,
 	limit,
 	startAfter,
 	writeBatch,
 } from "firebase/firestore";
 
 import { db } from "@/lib/firebase/config";
-import { LEAD_STATUSES } from "@/constants/leadStatuses";
+
+const DEFAULT_LEAD_STATUS = "New";
 
 export async function createLead(data) {
 	const docRef = await addDoc(collection(db, "leads"), {
@@ -37,7 +39,7 @@ export async function createLead(data) {
 
 		createdBy: data.createdBy || null,
 
-		status: data.status || LEAD_STATUSES.NEW,
+		status: data.status || DEFAULT_LEAD_STATUS,
 
 		lastContactDate: null,
 		lastActivityAt: serverTimestamp(),
@@ -56,7 +58,7 @@ export async function createInternalLead(data) {
 		source: "manual",
 		assignedAgentId: data.assignedAgentId || data.createdBy || null,
 		assignedAgentName: data.assignedAgentName || null,
-		status: data.status || LEAD_STATUSES.NEW,
+		status: data.status || DEFAULT_LEAD_STATUS,
 	});
 }
 
@@ -265,7 +267,7 @@ export async function importCsvLeads(rows, meta = {}) {
 
 			createdBy: meta.createdBy || null,
 
-			status: LEAD_STATUSES.NEW,
+			status: DEFAULT_LEAD_STATUS,
 
 			lastContactDate: null,
 			lastActivityAt: serverTimestamp(),
@@ -309,4 +311,21 @@ export async function updateLeadLastContactDate(leadId) {
 		lastContactDate: serverTimestamp(),
 		updatedAt: serverTimestamp(),
 	});
+}
+
+// Permanently deletes a lead and all related activities.
+// This is used for GDPR deletion requests and is available only for managers through Firestore Rules.
+export async function deleteLeadAndActivities(leadId) {
+	const activitiesQuery = query(
+		collection(db, "activities"),
+		where("leadId", "==", leadId),
+	);
+
+	const activitiesSnapshot = await getDocs(activitiesQuery);
+
+	for (const activityDoc of activitiesSnapshot.docs) {
+		await deleteDoc(activityDoc.ref);
+	}
+
+	await deleteDoc(doc(db, "leads", leadId));
 }

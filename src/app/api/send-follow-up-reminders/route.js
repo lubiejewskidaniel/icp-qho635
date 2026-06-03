@@ -101,8 +101,7 @@ export async function GET(request) {
 
 		// Send one reminder email to each agent.
 		for (const [agentId, agentLeads] of Object.entries(leadsByAgent)) {
-			const agentDoc = await adminDb.collection("users").doc(agentId);
-			get();
+			const agentDoc = await adminDb.collection("users").doc(agentId).get();
 
 			if (!agentDoc.exists) continue;
 

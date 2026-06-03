@@ -1,10 +1,11 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { LEAD_STATUS_OPTIONS } from "@/constants/leadStatuses";
+import { useRouter } from "next/navigation";
 import { MANUAL_ACTIVITY_OPTIONS } from "@/constants/activityTypes";
 import { useAuth } from "@/providers/AuthProvider/AuthProvider";
 import { getAgents } from "@/services/users/userService";
+import { getLeadStatuses } from "@/services/settings/leadStatusService";
 import { EMAIL_TEMPLATES } from "@/constants/emailTemplates";
 import { STATUS_NOTIFICATION_TEMPLATES } from "@/constants/statusNotificationTemplates";
 
@@ -16,15 +17,18 @@ import {
 	addLeadActivity,
 	getLeadActivities,
 	updateLeadLastContactDate,
+	deleteLeadAndActivities,
 } from "@/services/leads/leadService";
 
 import styles from "./LeadDetails.module.css";
 
 export default function LeadDetails({ leadId }) {
+	const router = useRouter();
 	const { user, role, name } = useAuth();
 
 	const [lead, setLead] = useState(null);
 	const [agents, setAgents] = useState([]);
+	const [leadStatuses, setLeadStatuses] = useState([]);
 	const [activities, setActivities] = useState([]);
 	const [lastVisibleActivity, setLastVisibleActivity] = useState(null);
 	const [hasMoreActivities, setHasMoreActivities] = useState(false);
@@ -68,6 +72,20 @@ export default function LeadDetails({ leadId }) {
 
 		loadLead();
 	}, [leadId]);
+
+	useEffect(() => {
+		async function loadLeadStatuses() {
+			try {
+				const data = await getLeadStatuses();
+
+				setLeadStatuses(data.filter((status) => status.active !== false));
+			} catch (error) {
+				console.error("Could not load lead statuses:", error);
+			}
+		}
+
+		loadLeadStatuses();
+	}, []);
 
 	useEffect(() => {
 		if (role !== "manager") return;
@@ -128,7 +146,6 @@ export default function LeadDetails({ leadId }) {
 				status: newStatus,
 			}));
 
-			// Send automatic customer email only for selected public-facing statuses
 			if (lead.email && statusNotificationTemplate) {
 				try {
 					const response = await fetch("/api/send-lead-email", {
@@ -203,7 +220,6 @@ export default function LeadDetails({ leadId }) {
 				assignedAgentName: selectedAgent.name,
 			}));
 
-			// Notify agent about new assignment
 			if (selectedAgent.email) {
 				try {
 					await fetch("/api/send-lead-email", {
@@ -215,20 +231,20 @@ export default function LeadDetails({ leadId }) {
 							to: selectedAgent.email,
 							subject: `New Lead Assigned: ${lead.fullName}`,
 							message: `
-								Hello ${selectedAgent.name},
+Hello ${selectedAgent.name},
 
-								A new lead has been assigned to you.
+A new lead has been assigned to you.
 
-								Lead Name: ${lead.fullName}
-								Email: ${lead.email || "-"}
-								Phone: ${lead.phone || "-"}
-								Location: ${lead.location || "-"}
+Lead Name: ${lead.fullName}
+Email: ${lead.email || "-"}
+Phone: ${lead.phone || "-"}
+Location: ${lead.location || "-"}
 
-								Please review the lead and follow up as soon as possible.
+Please review the lead and follow up as soon as possible.
 
-								Kind regards,
-								PLMS Team
-						`.trim(),
+Kind regards,
+PLMS Team
+							`.trim(),
 						}),
 					});
 				} catch (emailError) {
@@ -338,7 +354,6 @@ export default function LeadDetails({ leadId }) {
 				throw new Error("Email failed");
 			}
 
-			// Update last contact date after successful email delivery
 			await updateLeadLastContactDate(leadId);
 
 			await addLeadActivity({
@@ -359,6 +374,31 @@ export default function LeadDetails({ leadId }) {
 			setEmailError("Could not send email.");
 		} finally {
 			setEmailSending(false);
+		}
+	};
+
+	const handleDeleteLead = async () => {
+		if (role !== "manager") return;
+
+		const confirmed = window.confirm(
+			"Are you sure you want to permanently delete this lead and all related activities? This action cannot be undone.",
+		);
+
+		if (!confirmed) return;
+
+		setSaving(true);
+
+		try {
+			await deleteLeadAndActivities(leadId);
+
+			alert("Lead deleted successfully.");
+
+			router.push("/dashboard/leads");
+		} catch (err) {
+			console.error("Could not delete lead:", err);
+			alert("Could not delete lead.");
+		} finally {
+			setSaving(false);
 		}
 	};
 
@@ -386,7 +426,6 @@ export default function LeadDetails({ leadId }) {
 					<p>
 						<strong>Phone:</strong> {lead.phone || "-"}
 					</p>
-
 					<p>
 						<strong>Last Contact:</strong>{" "}
 						{lead.lastContactDate?.seconds
@@ -430,9 +469,9 @@ export default function LeadDetails({ leadId }) {
 						onChange={handleStatusChange}
 						disabled={saving}
 					>
-						{LEAD_STATUS_OPTIONS.map((status) => (
-							<option key={status} value={status}>
-								{status}
+						{leadStatuses.map((status) => (
+							<option key={status.id} value={status.name}>
+								{status.name}
 							</option>
 						))}
 					</select>
@@ -559,6 +598,24 @@ export default function LeadDetails({ leadId }) {
 					>
 						Log Activity
 					</button>
+
+					{role === "manager" && (
+						<div className={styles.dangerZone}>
+							<h3 className={styles.sectionTitle}>GDPR Deletion</h3>
+							<p>
+								Permanently delete this lead and all related activity history.
+							</p>
+
+							<button
+								type="button"
+								onClick={handleDeleteLead}
+								disabled={saving}
+								className={styles.deleteButton}
+							>
+								Delete Lead
+							</button>
+						</div>
+					)}
 
 					{saving && <p>Saving...</p>}
 				</div>
