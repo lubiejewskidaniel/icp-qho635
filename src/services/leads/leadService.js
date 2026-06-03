@@ -9,6 +9,7 @@ import {
 	doc,
 	getDoc,
 	updateDoc,
+	deleteDoc,
 	limit,
 	startAfter,
 	writeBatch,
@@ -309,4 +310,21 @@ export async function updateLeadLastContactDate(leadId) {
 		lastContactDate: serverTimestamp(),
 		updatedAt: serverTimestamp(),
 	});
+}
+
+// Permanently deletes a lead and all related activities.
+// This is used for GDPR deletion requests and is available only for managers through Firestore Rules.
+export async function deleteLeadAndActivities(leadId) {
+	const activitiesQuery = query(
+		collection(db, "activities"),
+		where("leadId", "==", leadId),
+	);
+
+	const activitiesSnapshot = await getDocs(activitiesQuery);
+
+	for (const activityDoc of activitiesSnapshot.docs) {
+		await deleteDoc(activityDoc.ref);
+	}
+
+	await deleteDoc(doc(db, "leads", leadId));
 }
