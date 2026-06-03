@@ -5,6 +5,8 @@ import { LEAD_STATUS_OPTIONS } from "@/constants/leadStatuses";
 import { MANUAL_ACTIVITY_OPTIONS } from "@/constants/activityTypes";
 import { useAuth } from "@/providers/AuthProvider/AuthProvider";
 import { getAgents } from "@/services/users/userService";
+import { EMAIL_TEMPLATES } from "@/constants/emailTemplates";
+import { STATUS_NOTIFICATION_TEMPLATES } from "@/constants/statusNotificationTemplates";
 
 import {
 	getLeadById,
@@ -13,6 +15,7 @@ import {
 	assignLeadToAgent,
 	addLeadActivity,
 	getLeadActivities,
+	updateLeadLastContactDate,
 } from "@/services/leads/leadService";
 
 import styles from "./LeadDetails.module.css";
@@ -25,9 +28,18 @@ export default function LeadDetails({ leadId }) {
 	const [activities, setActivities] = useState([]);
 	const [lastVisibleActivity, setLastVisibleActivity] = useState(null);
 	const [hasMoreActivities, setHasMoreActivities] = useState(false);
+
 	const [note, setNote] = useState("");
 	const [activityType, setActivityType] = useState("call");
 	const [activityDescription, setActivityDescription] = useState("");
+
+	const [emailSubject, setEmailSubject] = useState("");
+	const [emailMessage, setEmailMessage] = useState("");
+	const [emailSending, setEmailSending] = useState(false);
+	const [emailError, setEmailError] = useState("");
+	const [emailSuccess, setEmailSuccess] = useState("");
+	const [selectedEmailTemplate, setSelectedEmailTemplate] = useState("");
+
 	const [loading, setLoading] = useState(true);
 	const [saving, setSaving] = useState(false);
 	const [error, setError] = useState("");
@@ -104,6 +116,7 @@ export default function LeadDetails({ leadId }) {
 
 	const handleStatusChange = async (e) => {
 		const newStatus = e.target.value;
+		const statusNotificationTemplate = STATUS_NOTIFICATION_TEMPLATES[newStatus];
 
 		setSaving(true);
 
@@ -114,6 +127,36 @@ export default function LeadDetails({ leadId }) {
 				...currentLead,
 				status: newStatus,
 			}));
+
+			// Send automatic customer email only for selected public-facing statuses
+			if (lead.email && statusNotificationTemplate) {
+				try {
+					const response = await fetch("/api/send-lead-email", {
+						method: "POST",
+						headers: {
+							"Content-Type": "application/json",
+						},
+						body: JSON.stringify({
+							to: lead.email,
+							subject: statusNotificationTemplate.subject,
+							message: statusNotificationTemplate.message,
+						}),
+					});
+
+					if (!response.ok) {
+						throw new Error("Status notification email failed");
+					}
+
+					await addLeadActivity({
+						leadId,
+						type: "email",
+						description: `Status notification email sent to ${lead.email}: ${statusNotificationTemplate.subject}`,
+						...activityMeta,
+					});
+				} catch (emailError) {
+					console.error("Could not send status notification:", emailError);
+				}
+			}
 
 			await refreshActivities();
 		} finally {
@@ -159,6 +202,39 @@ export default function LeadDetails({ leadId }) {
 				assignedAgentId: selectedAgent.id,
 				assignedAgentName: selectedAgent.name,
 			}));
+
+			// Notify agent about new assignment
+			if (selectedAgent.email) {
+				try {
+					await fetch("/api/send-lead-email", {
+						method: "POST",
+						headers: {
+							"Content-Type": "application/json",
+						},
+						body: JSON.stringify({
+							to: selectedAgent.email,
+							subject: `New Lead Assigned: ${lead.fullName}`,
+							message: `
+								Hello ${selectedAgent.name},
+
+								A new lead has been assigned to you.
+
+								Lead Name: ${lead.fullName}
+								Email: ${lead.email || "-"}
+								Phone: ${lead.phone || "-"}
+								Location: ${lead.location || "-"}
+
+								Please review the lead and follow up as soon as possible.
+
+								Kind regards,
+								PLMS Team
+						`.trim(),
+						}),
+					});
+				} catch (emailError) {
+					console.error("Could not send assignment notification:", emailError);
+				}
+			}
 
 			await refreshActivities();
 		} finally {
@@ -207,6 +283,85 @@ export default function LeadDetails({ leadId }) {
 		}
 	};
 
+	const handleEmailTemplateChange = (e) => {
+		const templateId = e.target.value;
+
+		setSelectedEmailTemplate(templateId);
+		setEmailError("");
+		setEmailSuccess("");
+
+		if (!templateId) {
+			setEmailSubject("");
+			setEmailMessage("");
+			return;
+		}
+
+		const selectedTemplate = EMAIL_TEMPLATES.find(
+			(template) => template.id === templateId,
+		);
+
+		if (!selectedTemplate) return;
+
+		setEmailSubject(selectedTemplate.subject);
+		setEmailMessage(selectedTemplate.message);
+	};
+
+	const handleSendEmail = async () => {
+		if (!lead.email) {
+			setEmailError("This lead does not have an email address.");
+			return;
+		}
+
+		if (!emailSubject.trim() || !emailMessage.trim()) {
+			setEmailError("Email subject and message are required.");
+			return;
+		}
+
+		setEmailSending(true);
+		setEmailError("");
+		setEmailSuccess("");
+
+		try {
+			const response = await fetch("/api/send-lead-email", {
+				method: "POST",
+				headers: {
+					"Content-Type": "application/json",
+				},
+				body: JSON.stringify({
+					to: lead.email,
+					subject: emailSubject.trim(),
+					message: emailMessage.trim(),
+				}),
+			});
+
+			if (!response.ok) {
+				throw new Error("Email failed");
+			}
+
+			// Update last contact date after successful email delivery
+			await updateLeadLastContactDate(leadId);
+
+			await addLeadActivity({
+				leadId,
+				type: "email",
+				description: `Email sent to ${lead.email}: ${emailSubject.trim()}`,
+				...activityMeta,
+			});
+
+			await refreshActivities();
+
+			setEmailSubject("");
+			setEmailMessage("");
+			setSelectedEmailTemplate("");
+			setEmailSuccess("Email sent successfully.");
+		} catch (err) {
+			console.error("Could not send email:", err);
+			setEmailError("Could not send email.");
+		} finally {
+			setEmailSending(false);
+		}
+	};
+
 	if (loading) return <p>Loading lead...</p>;
 	if (error) return <p>{error}</p>;
 	if (!lead) return <p>Lead not found.</p>;
@@ -230,6 +385,13 @@ export default function LeadDetails({ leadId }) {
 					</p>
 					<p>
 						<strong>Phone:</strong> {lead.phone || "-"}
+					</p>
+
+					<p>
+						<strong>Last Contact:</strong>{" "}
+						{lead.lastContactDate?.seconds
+							? new Date(lead.lastContactDate.seconds * 1000).toLocaleString()
+							: "-"}
 					</p>
 					<p>
 						<strong>Country:</strong> {lead.country || "-"}
@@ -318,6 +480,52 @@ export default function LeadDetails({ leadId }) {
 					>
 						Add Note
 					</button>
+
+					<h3 className={styles.sectionTitle}>Send Email</h3>
+
+					<label>Email template</label>
+					<select
+						value={selectedEmailTemplate}
+						onChange={handleEmailTemplateChange}
+						disabled={emailSending}
+					>
+						<option value="">Custom email</option>
+						{EMAIL_TEMPLATES.map((template) => (
+							<option key={template.id} value={template.id}>
+								{template.label}
+							</option>
+						))}
+					</select>
+
+					<label>Email subject</label>
+					<input
+						type="text"
+						value={emailSubject}
+						onChange={(e) => setEmailSubject(e.target.value)}
+						placeholder="Email subject..."
+						disabled={emailSending}
+					/>
+
+					<label>Email message</label>
+					<textarea
+						value={emailMessage}
+						onChange={(e) => setEmailMessage(e.target.value)}
+						placeholder="Write your email message..."
+						rows={6}
+						disabled={emailSending}
+					/>
+
+					<button
+						type="button"
+						onClick={handleSendEmail}
+						disabled={emailSending || !lead.email}
+						className={styles.noteButton}
+					>
+						{emailSending ? "Sending..." : "Send Email"}
+					</button>
+
+					{emailError && <p>{emailError}</p>}
+					{emailSuccess && <p>{emailSuccess}</p>}
 
 					<h3 className={styles.sectionTitle}>Communication Activity</h3>
 

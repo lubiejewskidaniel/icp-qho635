@@ -285,3 +285,28 @@ export async function importCsvLeads(rows, meta = {}) {
 		skipped,
 	};
 }
+
+export async function getRecentActivities(limitCount = 5) {
+	const q = query(
+		collection(db, "activities"),
+		orderBy("createdAt", "desc"),
+		limit(limitCount),
+	);
+
+	const snapshot = await getDocs(q);
+
+	return snapshot.docs.map((document) => ({
+		id: document.id,
+		...document.data(),
+	}));
+}
+
+// Stores the date of the most recent contact with the lead
+export async function updateLeadLastContactDate(leadId) {
+	const leadRef = doc(db, "leads", leadId);
+
+	await updateDoc(leadRef, {
+		lastContactDate: serverTimestamp(),
+		updatedAt: serverTimestamp(),
+	});
+}

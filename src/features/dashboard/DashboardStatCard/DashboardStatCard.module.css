@@ -1,0 +1,27 @@
+.card {
+	background: #ffffff;
+	border: 1px solid #e5e7eb;
+	border-radius: 16px;
+	padding: 20px;
+	box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
+}
+
+.title {
+	margin: 0;
+	font-size: 14px;
+	color: #64748b;
+	font-weight: 500;
+}
+
+.value {
+	margin: 12px 0 0;
+	font-size: 32px;
+	font-weight: 700;
+	color: #0f172a;
+}
+
+.subtitle {
+	margin: 8px 0 0;
+	font-size: 13px;
+	color: #94a3b8;
+}
