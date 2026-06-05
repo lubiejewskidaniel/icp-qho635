@@ -8,6 +8,7 @@
 
 - [Project Overview](#project-overview)
 - [Purpose of the Application](#purpose-of-the-application)
+- [Test Accounts Login Details](#test-account-login-details)
 - [Project Milestones](#project-milestones)
 - [Project Team](#project-team)
 - [Technology Stack](#technology-stack)
@@ -60,6 +61,24 @@ The application enables:
 The project follows an MVP-first approach and was developed incrementally across three sprints.
 
 ---
+
+## Test Accounts Login Details
+
+The following test accounts have been created to allow quick and easy access to the system during testing and evaluation.
+
+Manager Account
+Email: lubiejewskidaniel@gmail.com
+
+Agent Account
+Email: danielharlow204@gmail.com
+
+Password
+The same password is used for both accounts:
+123456
+
+These accounts were created specifically for demonstration, testing,
+and assessment purposes to allow reviewers to access both manager
+and agent functionality without additional setup.
 
 ## Project Milestones
 
@@ -445,6 +464,24 @@ Firestore rules can be deployed with Firebase CLI:
 ```bash
 firebase deploy --only firestore:rules
 ```
+
+Working website is available online:
+https://icp-qho635-bx9l6zk4m-daniels-projects-536097e1.vercel.app/
+
+Login details for agent and manager:
+Manager Account
+Email: lubiejewskidaniel@gmail.com
+
+Agent Account
+Email: danielharlow204@gmail.com
+
+Password
+The same password is used for both accounts:
+123456
+
+These accounts were created specifically for demonstration, testing,
+and assessment purposes to allow reviewers to access both manager
+and agent functionality without additional setup.
 
 ---
 
