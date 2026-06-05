@@ -8,7 +8,7 @@
 
 - [Project Overview](#project-overview)
 - [Purpose of the Application](#purpose-of-the-application)
-- [Test Accounts Login Details](#test-account-login-details)
+- [Test Accounts Login Details](#test-accounts-login-details)
 - [Project Milestones](#project-milestones)
 - [Project Team](#project-team)
 - [Technology Stack](#technology-stack)
