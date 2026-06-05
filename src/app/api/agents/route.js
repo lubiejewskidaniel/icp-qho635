@@ -15,7 +15,7 @@ export async function POST(request) {
 			email,
 			password,
 			displayName: name,
-			emailVerified: true,
+			emailVerified: false,
 		});
 
 		await adminDb.collection("users").doc(userRecord.uid).set({
